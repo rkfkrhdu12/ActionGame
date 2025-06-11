@@ -3,10 +3,6 @@
 
 #include "BGame/Utility/UserdefinedMontageNotify.h"
 
-void UUserdefinedMontageNotify::BranchingPointNotify(FBranchingPointNotifyPayload& BranchingPointPayload)
-{
-	Super::BranchingPointNotify(BranchingPointPayload);
-}
 
 FString UUserdefinedMontageNotify::GetNotifyName_Implementation() const
 {
@@ -14,4 +10,10 @@ FString UUserdefinedMontageNotify::GetNotifyName_Implementation() const
 		return Super::GetNotifyName_Implementation();
 
 	return Super::GetNotifyName_Implementation();
+}
+
+void UUserdefinedMontageNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	const FAnimNotifyEventReference& EventReference)
+{
+	Super::Notify(MeshComp, Animation, EventReference);
 }

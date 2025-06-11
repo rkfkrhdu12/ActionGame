@@ -3,18 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AnimNotifies/AnimNotify_PlayMontageNotify.h"
-#include "UserdefinedMontageNotify.generated.h"
+#include "BGame/Utility/UserdefinedMontageNotify.h"
+#include "UNotify_IDEvent.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ACTIONGAME_API UUserdefinedMontageNotify : public UAnimNotify_PlayMontageNotify
+class ACTIONGAME_API UUNotify_IDEvent : public UUserdefinedMontageNotify
 {
 	GENERATED_BODY()
+
 public:
-	virtual FString GetNotifyName_Implementation() const override;
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 		const FAnimNotifyEventReference& EventReference) override;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Notify, meta = (AllowPrivateAccess = "true"))
+	int32 NotifyId;
+
+	
 };

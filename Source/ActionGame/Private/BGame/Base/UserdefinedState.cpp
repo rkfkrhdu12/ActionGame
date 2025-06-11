@@ -6,8 +6,10 @@
 #include "BGame/Base/AnimInstanceBase.h"
 #include "BGame/Base/CharacterBase.h"
 
-void UUserdefinedState::Initialize(ACharacterBase* Character)
+void UUserdefinedState::Initialize(ACharacterBase* Character, int32 ID)
 {
+	Index = ID;
+	
 	if (!Character) return;
 
 	MyCharacter = Character;
@@ -22,6 +24,8 @@ void UUserdefinedState::Initialize(ACharacterBase* Character)
 	}
 
 	bIsInitialized = true;
+
+	Awake();
 }
 
 void UUserdefinedState::Awake()
@@ -31,15 +35,19 @@ void UUserdefinedState::Awake()
 
 void UUserdefinedState::Enable()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s : Start"), *CurrentStateName);
+	// UE_LOG(LogTemp, Warning, TEXT("%s : Start"), *CurrentStateName);
+	
+	bIsEnabled = true;
 
 	OnEnable();
 }
 
 void UUserdefinedState::Disable()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s : End"), *CurrentStateName);
+	// UE_LOG(LogTemp, Warning, TEXT("%s : End"), *CurrentStateName);
 
+	bIsEnabled = false;
+	
 	OnDisable();
 }
 
@@ -95,20 +103,11 @@ bool UUserdefinedState::IsChangeState_Implementation(const FString& NextState)
 	return true;
 }
 
-void UUserdefinedState::ChangeState(const FString& NextState)
-{
-	if (!MyCharacter) return;
-	
-	UE_LOG(LogTemp, Warning, TEXT("%s ChangeState "),*MyCharacter->GetName());
-
-	MyCharacter->ChangeState(NextState);
-}
-
 bool UUserdefinedState::IsValidValues() const
 {
 	if (MyCharacter && MyController && MyMesh && MyAnimInstance) return true;
 
-	UE_LOG(LogTemp, Warning, TEXT("%s : Invalid State"), *CurrentStateName);
+	UE_LOG(LogTemp, Warning, TEXT("%s : Invalid State"), *CurrentStateName.ToString());
 
 	return false;
 }

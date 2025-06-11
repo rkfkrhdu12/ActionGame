@@ -38,7 +38,11 @@ void UActionManagerComponent::BeginPlay()
 					MyAnimInstance->OnMontageBlendedIn.AddDynamic(this,			&UActionManagerComponent::AnimMontageBlendedIn);
 				if (!MyAnimInstance->OnMontageBlendingOut.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageBlendedOut))
 					MyAnimInstance->OnMontageBlendingOut.AddDynamic(this,		&UActionManagerComponent::AnimMontageBlendedOut);
-				
+				if (!MyAnimInstance->OnPlayMontageNotifyBegin.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageNotifyBegin))
+					MyAnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this,		&UActionManagerComponent::AnimMontageNotifyBegin);
+				if (!MyAnimInstance->OnPlayMontageNotifyEnd.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageNotifyEnd))
+					MyAnimInstance->OnPlayMontageNotifyEnd.AddDynamic(this,		&UActionManagerComponent::AnimMontageNotifyEnd);
+		
 			}
 		}
 	}
@@ -80,3 +84,21 @@ void UActionManagerComponent::AnimMontageBlendedOut(class UAnimMontage* Montage,
 {
 	// if (CurrentState != nullptr) CurrentState->AnimBlendOut(Montage, bInterrupted);
 }
+
+
+void UActionManagerComponent::AnimMontageNotifyBegin(FName NotifyName,
+												const FBranchingPointNotifyPayload& BranchingPointPayload)
+{
+	// UE_LOG(LogTemp, Log, TEXT("UActionManagerComponent::NotifyBegin"));
+}
+void UActionManagerComponent::AnimMontageNotifyEnd(FName NotifyName,
+	const FBranchingPointNotifyPayload& BranchingPointPayload)
+{
+	// UE_LOG(LogTemp, Log, TEXT("UActionManagerComponent::NotifyEnd"));
+}
+
+void UActionManagerComponent::TestFuc()
+{
+	// UE_LOG(LogTemp, Log, TEXT("UActionManagerComponent::TestFu"));
+}
+

@@ -5,23 +5,8 @@
 
 #include "BGame/Base/Player/PlayerControllerBase.h"
 
-void UUserdefinedPlayerStateBase::Initialize(ACharacterBase* Character)
+void UUserdefinedPlayerStateBase::Initialize(ACharacterBase* Character, int32 ID)
 {
-	Super::Initialize(Character);
-
-	if (MyController == nullptr) return;
-	MyPlayerController = Cast<APlayerControllerBase>(MyController);
-	
-	if (MyPlayerController == nullptr) return;
-	InputManager = MyPlayerController->GetInputManagerComponent();
-}
-
-bool UUserdefinedPlayerStateBase::IsValidValues() const
-{
-	if (MyCharacter && MyController && MyMesh && MyAnimInstance && InputManager) return true;
-
-	UE_LOG(LogTemp, Warning, TEXT("%s : Invalid State"), *CurrentStateName);
-
-	return false;
+	Super::Initialize(Character, ID);
 }
  

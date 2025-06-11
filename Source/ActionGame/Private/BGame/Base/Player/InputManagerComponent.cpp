@@ -34,12 +34,12 @@ void UInputManagerComponent::BindActions(UEnhancedInputComponent* EnhancedInputC
 	}
 }
 
-void UInputManagerComponent::InputBroadcast(const FOnInputKeyVector2D& InputDelegate, const FVector2D& AxisValue)
+void UInputManagerComponent::InputBroadcast(const FOnCharacterInputVector2D& InputDelegate, const FVector2D& AxisValue)
 {
 	InputDelegate.Broadcast(AxisValue);
 }
 
-void UInputManagerComponent::InputBroadcast(const FOnInputKey& InputDelegate, const bool& InputValue)
+void UInputManagerComponent::InputBroadcast(const FOnCharacterInput& InputDelegate, const bool& InputValue)
 {
 	InputDelegate.Broadcast(InputValue);
 }
@@ -48,19 +48,25 @@ void UInputManagerComponent::InputBroadcast(const FOnInputKey& InputDelegate, co
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UInputManagerComponent::InputMove(const struct FInputActionValue& AxisValue)
 {
-	InputBroadcast(OnInputMoveDirection, AxisValue.Get<FVector2D>());
+	if (!MyCharacter) return;
+	
+	InputBroadcast(MyCharacter->OnInputMoveDirection, AxisValue.Get<FVector2D>());
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UInputManagerComponent::InputLook(const struct FInputActionValue& AxisValue)
 {
-	InputBroadcast(OnInputLookDirection, AxisValue.Get<FVector2D>());
+	if (!MyCharacter) return;
+	
+	InputBroadcast(MyCharacter->OnInputLookDirection, AxisValue.Get<FVector2D>());
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
 void UInputManagerComponent::InputAttack(const struct FInputActionValue& AxisValue)
 {
+	if (!MyCharacter) return;
+	
 	bInputAttack = AxisValue.Get<bool>();
 	
-	InputBroadcast(OnInputAttack, bInputAttack);
+	InputBroadcast(MyCharacter->OnInputAttack, bInputAttack);
 }

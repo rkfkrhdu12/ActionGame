@@ -15,9 +15,11 @@ class ACTIONGAME_API APlayerCharacterBase : public ACharacterBase
 	GENERATED_BODY()
 public:
 	APlayerCharacterBase();
-	
-protected:
-	virtual void BeginPlay() override;
+public:
+	// Look의 경우 Rotate나 Quaternion같은 류가 아닌 마우스의 이동으로 입력받으므로 캐릭터를 분리
+	// Not Rotate, Quaternion  LookInput is Mouse MoveDirection(Vector2D)
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
+	FOnCharacterInputVector2D OnInputLookDirection;
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraArmComponent = nullptr;

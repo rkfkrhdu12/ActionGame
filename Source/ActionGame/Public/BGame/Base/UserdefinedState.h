@@ -14,7 +14,7 @@ class ACTIONGAME_API UUserdefinedState : public UObject
 {
 	GENERATED_BODY()
 public:
-	virtual void Initialize(class ACharacterBase* Character);
+	virtual void Initialize(class ACharacterBase* Character, int32 ID);
 
 	// BeginPlay
 	virtual void Awake();
@@ -57,12 +57,24 @@ public:
 	bool IsChangeState(const FString& NextState);
 	bool IsChangeState_Implementation(const FString& NextState);
 
-	UFUNCTION(BlueprintCallable)
-	void ChangeState(const FString& NextState);
 protected:
+	UPROPERTY()
 	bool bIsInitialized = false;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	FString CurrentStateName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bIsEnabled = false;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = false, EditConditionHides))
+	FName CurrentStateName;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = false, EditConditionHides))
+	int32 Index;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,
+          meta=(RowType="/Script/ActionGame.CustomEnumRow"))
+	FDataTableRowHandle CurrentState;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Notify)
+	TArray<FString> NotifyNameList;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<class ACharacterBase> MyCharacter;
@@ -76,7 +88,8 @@ protected:
 public:
 	bool IsInitialized() const { return bIsInitialized; }
 
-	const FString& GetCurrentStateName() const { return CurrentStateName; }
+	FString GetCurrentStateName() const { return CurrentStateName.ToString(); }
+	int32 GetCurrentStateIndex() const { return Index; }
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsValidValues() const;

@@ -8,7 +8,6 @@
 #include "BGame/Base/Player/InputManagerComponent.h"
 #include "BGame/Base/Player/PlayerCharacterBase.h"
 #include "BGame/Base/Player/PlayerControllerBase.h"
-#include "BGame/Utility/CustomEnumTable.h"
 
 
 UStateManagerComponent::UStateManagerComponent()
@@ -16,53 +15,86 @@ UStateManagerComponent::UStateManagerComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-void UStateManagerComponent::ChangeState(const FString& NextState)
+void UStateManagerComponent::ChangeState(const FName& NextState)
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s ChangeState %s"),*GetOwner()->GetName(), *GetName());
-	if (StateList.Num() <= 0 || UseStateEnum == nullptr) return;
-	if (NextState.IsEmpty() || NextState == CurrentState->GetCurrentStateName()) return;
+	if (!MyCharacter) return;
+
 	
-	FString OriginState = "";
-	if (CurrentState != nullptr)
-	{
-		OriginState = CurrentState->GetCurrentStateName();
+	if (MyCharacter->OnPreStateChanged.IsBound()) MyCharacter->OnPreStateChanged.Broadcast(CurrentState, NextState);
+
+
+
 	
-		if (CurrentState->IsChangeState(NextState))
-		{
-			PrevState = CurrentState;
-
-			CurrentState->Disable();
-		}
-	}
-
-	if (StateList[NextState] != nullptr)
-	{
-		CurrentState = StateList[NextState];
-		CurrentState->Enable();
-	}
-
-	if (OnStateChanged.IsBound()) OnStateChanged.Broadcast(CurrentState->GetCurrentStateName(),
-		OriginState, NextState);
+	if (MyCharacter->OnPostStateChanged.IsBound()) MyCharacter->OnPostStateChanged.Broadcast(CurrentState, NextState);
 }
 
-
-void UStateManagerComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	InitializeComponents();
-
-	InitializeStateList();
-
-	if (MyController)
-	{
-		auto InputManager = MyController->GetInputManagerComponent();
-		if (!InputManager->OnInputAttack.IsAlreadyBound(this, &UStateManagerComponent::InputAttack))
-			InputManager->OnInputAttack.AddDynamic(this, &UStateManagerComponent::InputAttack);
-	}
-}
-
-
+//
+// void UStateManagerComponent::ChangeState(const FString& NextState)
+// {
+// 	// nUE_LOG(LogTemp, Warning, TEXT("%s ChangeState %s"), *GetFullName(), *NextState);
+//
+// 	if (CurrentStateName == NextState) return;
+//
+// 	if (MyCharacter)
+// 	if (auto UseStateEnum = MyCharacter->GetUseStateEnum())
+// 	{
+// 		if (!UseStateEnum->GetStateList().Contains(NextState)) return;
+// 	
+// 		auto StateList = UseStateEnum->GetStateList();
+// 		if (auto ChangedState = StateList[NextState])
+// 		{
+// 			if (StateList.Contains(CurrentStateName))
+// 			{
+// 				PrevStateName = CurrentStateName;
+//
+// 				StateList[CurrentStateName]->Disable();
+// 			}
+//
+// 			CurrentStateName = NextState;
+// 			
+// 			StateList[CurrentStateName]->Enable();
+// 		}
+// 	}
+// }
+//
+// void UStateManagerComponent::BeginPlay()
+// {
+// 	Super::BeginPlay();
+// 	InitializeComponents();
+//
+// 	if (auto UseStateEnum = MyCharacter->GetUseStateEnum())
+// 	{
+// 		auto StateList = UseStateEnum->GetStateList();
+//
+// 		TArray<UUserdefinedState*> ClassList;
+// 		StateList.GenerateValueArray(ClassList);
+// 		int32 Index = -1;
+// 		for (auto State : ClassList)
+// 		{
+// 			if (State) State->Initialize(MyCharacter, ++Index);
+// 		}
+//
+// 		if (MyCharacter)
+// 		{
+// 			if (!MyCharacter->OnInputAttack.IsAlreadyBound(this, &UStateManagerComponent::InputAttack))
+// 				MyCharacter->OnInputAttack.AddDynamic(this, &UStateManagerComponent::InputAttack);
+//
+// 			if (!MyCharacter->OnStateChanged.IsAlreadyBound(this, &UStateManagerComponent::ChangeState))
+// 				MyCharacter->OnStateChanged.AddDynamic(this, &UStateManagerComponent::ChangeState);
+// 		}
+//
+// 		ChangeState("Idle");
+// 	}
+// }
+//
+// void UStateManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+// 	FActorComponentTickFunction* ThisTickFunction)
+// {
+// 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+//
+// 	// if (CurrentState) CurrentState->Update(DeltaTime);
+// }
+//
 void UStateManagerComponent::InitializeComponents()
 {
 	if (GetOwner() != nullptr)
@@ -74,67 +106,26 @@ void UStateManagerComponent::InitializeComponents()
 		}
 	}
 }
-
-void UStateManagerComponent::InitializeStateList()
-{
-	UE_LOG(LogTemp, Warning, TEXT("%s InitializeStateList 1   %d"),*GetOwner()->GetName(), StateList.Num());
-	if (StateList.Num() <= 0 || UseStateEnum == nullptr) return;
-	
-	for (FString& EnumName : UseStateEnum->GetEnumNames())
-	{
-		if (StateList.Contains(EnumName))
-		{
-			if (UUserdefinedState* State = StateList[EnumName])
-			{
-				if (!State->IsInitialized()) State->Initialize(Cast<ACharacterBase>(GetOwner()));
-				State->BeginPlay();
-			}
-		}
-	}
-
-	CurrentState = StateList["Idle"];
-	CurrentState->Enable();
-}
-
-
-
-
-//////////////////////////////////////////////////////////////////////////
-/// Only EDITOR
-#if WITH_EDITOR
-void UStateManagerComponent::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
-{
-	Super::PostEditChangeProperty(PropertyChangedEvent);
-	
-	if (!GetOwner()) return;
-
-	if (PropertyChangedEvent.ChangeType == EPropertyChangeType::ValueSet) // Change  Value Set
-	{
-		if (PropertyChangedEvent.GetPropertyName().ToString() == "UseStateEnum")
-		{
-			if (UseStateEnum)
-			{
-				if (UseStateEnum->GetEnumNames().Num() != 0)
-				{
-					for (FString& EnumName : UseStateEnum->GetEnumNames())
-					{
-						if (!StateList.Contains(EnumName))
-							StateList.Add(EnumName);
-					}
-				}
-			}
-			else
-				UE_LOG(LogTemp, Error, TEXT("%s : UseStateEnum is Not Set !!"), *GetName());
-		}
-	}
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UStateManagerComponent::InputAttack(bool InputValue)
-{
-	if (InputValue)
-	{
-		ChangeState("Attack");
-	}
-}
-#endif
+//
+// class UUserdefinedState* UStateManagerComponent::GetCurrentState() const
+// {
+// 	if (MyCharacter)
+// 		if (MyCharacter->GetUseStateEnum())
+// 			return *MyCharacter->GetUseStateEnum()->GetStateList().Find(CurrentStateName);
+//
+// 	return nullptr;
+// }
+//
+// FString UStateManagerComponent::GetCurrentStateName() const
+// {
+// 	// if (CurrentState) return CurrentState->GetCurrentStateName();
+// 	// else
+// 		return "";
+// }
+//
+// int32 UStateManagerComponent::GetCurrentStateIndex() const
+// {
+// 	// if (CurrentState) return CurrentState->GetCurrentStateIndex();
+// 	// else
+// 		return 0;
+// }

@@ -28,9 +28,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
 	TObjectPtr<USkeletalMeshComponent> MyMesh;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, Category = "State", meta = (AllowPrivateAccess = "true"))
-	class UCustomEnumTable* StateEnum;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
 	TMap<FString, int32> CurrentStateIndexList;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)

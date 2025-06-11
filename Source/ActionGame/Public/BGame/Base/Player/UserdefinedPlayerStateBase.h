@@ -17,14 +17,7 @@ class ACTIONGAME_API UUserdefinedPlayerStateBase : public UUserdefinedState
 	GENERATED_BODY()
 
 public:
-	virtual void Initialize(ACharacterBase* Character) override;
-	virtual bool IsValidValues() const override;
+	virtual void Initialize(ACharacterBase* Character, int32 ID) override;
 
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<APlayerControllerBase> MyPlayerController = nullptr;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputManagerComponent> InputManager = nullptr;
 };
 

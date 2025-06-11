@@ -5,6 +5,7 @@
 
 #include "BGame/Base/ActionManagerComponent.h"
 #include "BGame/Base/StateManagerComponent.h"
+#include "BGame/Utility/CustomEnumRow.h"
 
 
 // Sets default values
@@ -14,20 +15,51 @@ ACharacterBase::ACharacterBase()
 
 	StateManager = CreateDefaultSubobject<UStateManagerComponent>(TEXT("StateManager"));
 	ActionManager = CreateDefaultSubobject<UActionManagerComponent>(TEXT("ActionManager"));
+
+	TestFunc("Initialize");
+}
+
+void ACharacterBase::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	if (StateList)
+	{
+		for (auto Element : StateList->GetRowMap())
+		{
+			auto Row = Element.Key;
+
+			if (!StateNames.Contains(Row)) StateNames.Add(Row);
+
+			UE_LOG(LogTemp, Warning, TEXT("Add StateNames %s"), *Row.ToString());
+		}
+	}
 }
 
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	StateManager = FindComponentByClass<UStateManagerComponent>();
 }
 
-
-void ACharacterBase::ChangeState(const FString& NextState) const
+void ACharacterBase::ChangeState(const FName& NextState) const
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s ChangeState %s"),*GetName(), *StateManager->GetName());
+	if (OnEnterState.IsBound()) OnEnterState.Broadcast(NextState);
+	
+	if (OnStateChanged.IsBound()) OnStateChanged.Broadcast(NextState);
+	
+	if (OnExitState.IsBound()) OnExitState.Broadcast(NextState);
+}
 
-	if (StateManager) { StateManager->ChangeState(NextState); }
+void ACharacterBase::ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State)
+{
+	if (!EnumTable || !Target) return;
+
+	Target->ChangeState(State);
+}
+
+auto ACharacterBase::GetStateIndex(const FName& StateName) const -> int32
+{
+	return StateNames.Find(StateName);
 }
 

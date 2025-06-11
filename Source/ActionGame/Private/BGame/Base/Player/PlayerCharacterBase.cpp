@@ -7,10 +7,10 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-#include "BGame/Utility/CustomEnumTable.h"
-
 APlayerCharacterBase::APlayerCharacterBase()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
 	bUseControllerRotationRoll = false;
@@ -25,9 +25,4 @@ APlayerCharacterBase::APlayerCharacterBase()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(CameraArmComponent);
 	CameraComponent->bUsePawnControlRotation = false;
-}
-
-void APlayerCharacterBase::BeginPlay()
-{
-	Super::BeginPlay();
 }
