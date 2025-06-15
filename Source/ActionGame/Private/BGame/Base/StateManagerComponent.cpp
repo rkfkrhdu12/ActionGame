@@ -5,10 +5,6 @@
 
 #include "BGame/Base/CharacterBase.h"
 #include "BGame/Base/UserdefinedState.h"
-#include "BGame/Base/Player/InputManagerComponent.h"
-#include "BGame/Base/Player/PlayerCharacterBase.h"
-#include "BGame/Base/Player/PlayerControllerBase.h"
-
 
 UStateManagerComponent::UStateManagerComponent()
 {
@@ -19,113 +15,121 @@ void UStateManagerComponent::ChangeState(const FName& NextState)
 {
 	if (!MyCharacter) return;
 
+	if (MyCharacter->OnPreStateChanged.IsBound())
+		MyCharacter->OnPreStateChanged.Broadcast(CurrentEnableStateName, NextState);
+
+	if (CurrentEnableStateName == NextState) return;
+
+	auto List = MyCharacter->GetStateClassList();
+	auto CurrentIndex = MyCharacter->GetStateIndex(CurrentEnableStateName);
+	auto NextIndex = MyCharacter->GetStateIndex(NextState);
+
+	bool ChangeSuccess = true;
+	if (CurrentIndex != INDEX_NONE)
+	{
+		if (List.Num() > CurrentIndex)
+		{
+			ChangeSuccess = List[CurrentIndex]->CanChanged(NextState);
+			if (ChangeSuccess)
+			{
+				if (MyCharacter->OnExitState.IsBound())
+					MyCharacter->OnExitState.Broadcast(CurrentEnableStateName);
+
+				List[CurrentIndex]->Disable();
+			}
+		}
+	}
+
+	if (NextIndex != INDEX_NONE && ChangeSuccess)
+	{
+		CurrentEnableStateName = NextState;
+		if (MyCharacter->OnEnterState.IsBound())  MyCharacter->OnEnterState.Broadcast(NextState);
+
+		List[NextIndex]->Enable();
+	}
 	
-	if (MyCharacter->OnPreStateChanged.IsBound()) MyCharacter->OnPreStateChanged.Broadcast(CurrentState, NextState);
+	if (MyCharacter->OnPostStateChanged.IsBound())
+		MyCharacter->OnPostStateChanged.Broadcast(CurrentEnableStateName, NextState);
 
-
-
-	
-	if (MyCharacter->OnPostStateChanged.IsBound()) MyCharacter->OnPostStateChanged.Broadcast(CurrentState, NextState);
 }
 
-//
-// void UStateManagerComponent::ChangeState(const FString& NextState)
-// {
-// 	// nUE_LOG(LogTemp, Warning, TEXT("%s ChangeState %s"), *GetFullName(), *NextState);
-//
-// 	if (CurrentStateName == NextState) return;
-//
-// 	if (MyCharacter)
-// 	if (auto UseStateEnum = MyCharacter->GetUseStateEnum())
-// 	{
-// 		if (!UseStateEnum->GetStateList().Contains(NextState)) return;
-// 	
-// 		auto StateList = UseStateEnum->GetStateList();
-// 		if (auto ChangedState = StateList[NextState])
-// 		{
-// 			if (StateList.Contains(CurrentStateName))
-// 			{
-// 				PrevStateName = CurrentStateName;
-//
-// 				StateList[CurrentStateName]->Disable();
-// 			}
-//
-// 			CurrentStateName = NextState;
-// 			
-// 			StateList[CurrentStateName]->Enable();
-// 		}
-// 	}
-// }
-//
-// void UStateManagerComponent::BeginPlay()
-// {
-// 	Super::BeginPlay();
-// 	InitializeComponents();
-//
-// 	if (auto UseStateEnum = MyCharacter->GetUseStateEnum())
-// 	{
-// 		auto StateList = UseStateEnum->GetStateList();
-//
-// 		TArray<UUserdefinedState*> ClassList;
-// 		StateList.GenerateValueArray(ClassList);
-// 		int32 Index = -1;
-// 		for (auto State : ClassList)
-// 		{
-// 			if (State) State->Initialize(MyCharacter, ++Index);
-// 		}
-//
-// 		if (MyCharacter)
-// 		{
-// 			if (!MyCharacter->OnInputAttack.IsAlreadyBound(this, &UStateManagerComponent::InputAttack))
-// 				MyCharacter->OnInputAttack.AddDynamic(this, &UStateManagerComponent::InputAttack);
-//
-// 			if (!MyCharacter->OnStateChanged.IsAlreadyBound(this, &UStateManagerComponent::ChangeState))
-// 				MyCharacter->OnStateChanged.AddDynamic(this, &UStateManagerComponent::ChangeState);
-// 		}
-//
-// 		ChangeState("Idle");
-// 	}
-// }
-//
-// void UStateManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType,
-// 	FActorComponentTickFunction* ThisTickFunction)
-// {
-// 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-//
-// 	// if (CurrentState) CurrentState->Update(DeltaTime);
-// }
-//
-void UStateManagerComponent::InitializeComponents()
+void UStateManagerComponent::BeginPlay()
 {
-	if (GetOwner() != nullptr)
+	Super::BeginPlay();
+
+	MyCharacter = Cast<ACharacterBase>(GetOwner());
+	if (MyCharacter)
 	{
-		MyCharacter = Cast<APlayerCharacterBase>(GetOwner());
-		if (MyCharacter != nullptr)
-		{
-			MyController = Cast<APlayerControllerBase>(MyCharacter->GetController());
-		}
+		UE_LOG(LogTemp, Display, TEXT("%s BeginPlay %s"), *MyCharacter->GetName(), *GetFullName());
+	
+		// if (MyCharacter->OnStateChanged.IsAlreadyBound(this, &UStateManagerComponent::ChangeState))
+		// 	MyCharacter->OnStateChanged.AddDynamic(this, &UStateManagerComponent::ChangeState);
+
+		ChangeState("Idle");
 	}
 }
 //
-// class UUserdefinedState* UStateManagerComponent::GetCurrentState() const
+// void UStateManagerComponent::ChangeState(const FName& NextState)
 // {
-// 	if (MyCharacter)
-// 		if (MyCharacter->GetUseStateEnum())
-// 			return *MyCharacter->GetUseStateEnum()->GetStateList().Find(CurrentStateName);
+// 	if (!MyCharacter) return;
+// 	if (CurrentState->GetCurrentStateName() == NextState) return;
+// 	if (!StateClassMap.Contains(NextState)) return;
 //
-// 	return nullptr;
+// 	// if (MyCharacter->OnPreStateChanged.IsBound()) MyCharacter->OnPreStateChanged.Broadcast(FName(CurrentState->GetCurrentStateName()), NextState);
+//
+// 	bool bSuccess = true;
+// 	if (CurrentState)
+// 	{
+// 		bSuccess = CurrentState->IsChangeState(NextState);
+// 		if (bSuccess)
+// 		{
+// 			CurrentState->Disable();
+// 			if (MyCharacter->OnExitState.IsBound()) MyCharacter->OnExitState.Broadcast(FName(CurrentState->GetCurrentStateName()));
+// 		}
+// 	}
+//
+// 	if (bSuccess)
+// 	{
+// 		CurrentState = StateClassMap[NextState];
+// 		CurrentState->Enable();
+// 		
+// 		if (MyCharacter->OnEnterState.IsBound()) MyCharacter->OnEnterState.Broadcast(FName(CurrentState->GetCurrentStateName()));
+// 	}
+// 	// if (MyCharacter->OnPostStateChanged.IsBound()) MyCharacter->OnPostStateChanged.Broadcast(FName(CurrentState->GetCurrentStateName()), NextState);
 // }
 //
-// FString UStateManagerComponent::GetCurrentStateName() const
+// void UStateManagerComponent::InitializeState()
 // {
-// 	// if (CurrentState) return CurrentState->GetCurrentStateName();
-// 	// else
-// 		return "";
+// 	if (!DataTable || ClassList.Num() == 0) return;
+//
+// 	StateList = DataTable;
+//
+// 	for (UUserdefinedState* State : ClassList)
+// 	{
+// 		FName Name = FName(State->GetCurrentStateName());
+// 		StateClassMap.Add(Name, State);
+// 		StateClassList.Add(Name);
+// 		
+// 		State->Initialize(MyCharacter);
+// 	}
+//
+// 	if (StateClassMap.Contains("Idle"))
+// 	{
+// 		CurrentState = StateClassMap["Idle"];
+// 		CurrentState->Enable();
+// 	}
 // }
 //
-// int32 UStateManagerComponent::GetCurrentStateIndex() const
+// void UStateManagerComponent::InitializeComponents()
 // {
-// 	// if (CurrentState) return CurrentState->GetCurrentStateIndex();
-// 	// else
-// 		return 0;
+// 	if (GetOwner() != nullptr)
+// 	{
+// 		MyCharacter = Cast<APlayerCharacterBase>(GetOwner());
+// 	}
+// }
+
+//
+// int32 UStateManagerComponent::GetStateIndex(FName StateName) const
+// {
+// 	return StateClassList.Find(StateName);
 // }

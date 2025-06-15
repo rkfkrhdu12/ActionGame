@@ -5,11 +5,10 @@
 
 #include "BGame/Base/AnimInstanceBase.h"
 #include "BGame/Base/CharacterBase.h"
+#include "BGame/Utility/CustomEnumRow.h"
 
-void UUserdefinedState::Initialize(ACharacterBase* Character, int32 ID)
+void UUserdefinedState::Initialize(ACharacterBase* Character)
 {
-	Index = ID;
-	
 	if (!Character) return;
 
 	MyCharacter = Character;
@@ -22,7 +21,7 @@ void UUserdefinedState::Initialize(ACharacterBase* Character, int32 ID)
 			MyAnimInstance = Cast<UAnimInstanceBase>(MyMesh->GetAnimInstance());
 		}
 	}
-
+	
 	bIsInitialized = true;
 
 	Awake();
@@ -35,7 +34,7 @@ void UUserdefinedState::Awake()
 
 void UUserdefinedState::Enable()
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s : Start"), *CurrentStateName);
+	UE_LOG(LogTemp, Warning, TEXT("%s : Start"), *GetName());
 	
 	bIsEnabled = true;
 
@@ -44,7 +43,7 @@ void UUserdefinedState::Enable()
 
 void UUserdefinedState::Disable()
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s : End"), *CurrentStateName);
+	UE_LOG(LogTemp, Warning, TEXT("%s : End"), *GetName());
 
 	bIsEnabled = false;
 	
@@ -97,7 +96,7 @@ void UUserdefinedState::AnimInterrupted()
 	OnAnimInterrupted();
 }
 
-bool UUserdefinedState::IsChangeState_Implementation(const FString& NextState)
+bool UUserdefinedState::CanChanged_Implementation(const FName& NextState)
 {
 	// UE_LOG(LogTemp, Warning, TEXT("%s : IsChangeState"), *CurrentStateName);
 	return true;
@@ -107,7 +106,7 @@ bool UUserdefinedState::IsValidValues() const
 {
 	if (MyCharacter && MyController && MyMesh && MyAnimInstance) return true;
 
-	UE_LOG(LogTemp, Warning, TEXT("%s : Invalid State"), *CurrentStateName.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("%s : Invalid State"), *GetName());
 
 	return false;
 }

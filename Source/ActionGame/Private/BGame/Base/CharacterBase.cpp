@@ -5,16 +5,19 @@
 
 #include "BGame/Base/ActionManagerComponent.h"
 #include "BGame/Base/StateManagerComponent.h"
-#include "BGame/Utility/CustomEnumRow.h"
+#include "BGame/Base/UserdefinedState.h"
 
+#define AssignDefaultSubobject(Variable)\
+	Variable = CreateDefaultSubobject<std::remove_reference_t<decltype(*Variable)>>(#Variable)
 
 // Sets default values
 ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
+	
+	// AssignDefaultSubobject(StateManager);
+	AssignDefaultSubobject(ActionManager);
 	StateManager = CreateDefaultSubobject<UStateManagerComponent>(TEXT("StateManager"));
-	ActionManager = CreateDefaultSubobject<UActionManagerComponent>(TEXT("ActionManager"));
 
 	TestFunc("Initialize");
 }
@@ -22,16 +25,14 @@ ACharacterBase::ACharacterBase()
 void ACharacterBase::PostInitProperties()
 {
 	Super::PostInitProperties();
-
+	if (HasAnyFlags(RF_ClassDefaultObject)) return;
+	
 	if (StateList)
 	{
 		for (auto Element : StateList->GetRowMap())
 		{
 			auto Row = Element.Key;
-
 			if (!StateNames.Contains(Row)) StateNames.Add(Row);
-
-			UE_LOG(LogTemp, Warning, TEXT("Add StateNames %s"), *Row.ToString());
 		}
 	}
 }
@@ -39,16 +40,23 @@ void ACharacterBase::PostInitProperties()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	if (HasAnyFlags(RF_ClassDefaultObject)) return;
+	
+	if (StateClassList.Num() != 0)
+	{
+		for (auto Element : StateClassList)
+			Element->Initialize(this);
+	}
+	
 
+	StateManager = FindComponentByClass<UStateManagerComponent>();
 }
 
 void ACharacterBase::ChangeState(const FName& NextState) const
 {
-	if (OnEnterState.IsBound()) OnEnterState.Broadcast(NextState);
-	
 	if (OnStateChanged.IsBound()) OnStateChanged.Broadcast(NextState);
-	
-	if (OnExitState.IsBound()) OnExitState.Broadcast(NextState);
+
+	if (StateManager) StateManager->ChangeState(NextState);
 }
 
 void ACharacterBase::ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State)

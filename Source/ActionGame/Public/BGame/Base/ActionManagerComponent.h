@@ -6,8 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "ActionManagerComponent.generated.h"
 
-	
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONGAME_API UActionManagerComponent : public UActorComponent
 {

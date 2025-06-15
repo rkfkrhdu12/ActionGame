@@ -20,12 +20,10 @@ public:
 	virtual void BeginPlay() override;
 	
 public:
-	void ChangeState(int32 StateID) const;
-	void ChangeState(const FName& StateName) const;
+	void ChangeState(const FName& NextState) const;
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf = "Target", DataTablePin="EnumTable", RowNamePin="State"), Category="State")
 	static void ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State);
 
-	
 	/////////////////////////////// Delegate / Event
 public:
 	////////////////////////// State
@@ -49,8 +47,8 @@ public:
 	//////////////////////////////// Components
 protected:	
 	//					   State Manager	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
-	class UStateManagerComponent* StateManager;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
+	class UStateManagerComponent* StateManager = nullptr;
 	
 	//					   Action Manager	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Action, meta = (AllowPrivateAccess = "true"))
@@ -61,14 +59,19 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
 	UDataTable* StateList;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
+	TArray<class UUserdefinedState*> StateClassList;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true", EditCondition = false, EditConditionHides))
 	TArray<FName> StateNames;
-	
 public: //		Get Function
 	class UActionManagerComponent* GetActionManager() const { return ActionManager; }
 	class UStateManagerComponent* GetStateManager() const { return StateManager; }
 
 	auto GetStateIndex(const FName& StateName) const -> int32;
+
+	TArray<class UUserdefinedState*> GetStateClassList() const { return StateClassList; }
+	TArray<FName> GetStateNames() const { return StateNames; }
 	//////////////////////////////// Debug
 public:
 	// virtual void Tick(float DeltaSeconds) override;
@@ -79,17 +82,14 @@ public:
 
 	void TestFunc(const FString fName) const
 	{
-		return;
-		//
-		// if (StateManager)
-		// {
-		// 	UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *StateManager->GetFullName());
-		// }
-		// else
-		// {
-		// 	UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, StateManager != nullptr);
-		// }
+		if (StateManager)
+		{
+			UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *StateManager->GetFullName());
+		}
+		else
+		{
+			UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, StateManager != nullptr);
+		}
 	}
 
-	
 };

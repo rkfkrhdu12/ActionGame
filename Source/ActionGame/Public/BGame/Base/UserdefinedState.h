@@ -9,12 +9,12 @@
 /**
  * 
  */
-UCLASS(BlueprintType, Blueprintable, EditInlineNew, Meta = (BlueprintSpawnableComponent), DefaultToInstanced)
+UCLASS(BlueprintType, Meta = (BlueprintSpawnableComponent), EditInlineNew, DefaultToInstanced)
 class ACTIONGAME_API UUserdefinedState : public UObject
 {
 	GENERATED_BODY()
 public:
-	virtual void Initialize(class ACharacterBase* Character, int32 ID);
+	virtual void Initialize(class ACharacterBase* Character);
 
 	// BeginPlay
 	virtual void Awake();
@@ -54,8 +54,8 @@ public:
 	//void OnAnimNotify_Implementation(FString NotifyName);
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	bool IsChangeState(const FString& NextState);
-	bool IsChangeState_Implementation(const FString& NextState);
+	bool CanChanged(const FName& NextState);
+	bool CanChanged_Implementation(const FName& NextState);
 
 protected:
 	UPROPERTY()
@@ -64,32 +64,20 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bIsEnabled = false;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = false, EditConditionHides))
-	FName CurrentStateName;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (EditCondition = false, EditConditionHides))
-	int32 Index;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,
-          meta=(RowType="/Script/ActionGame.CustomEnumRow"))
-	FDataTableRowHandle CurrentState;
-	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Notify)
 	TArray<FString> NotifyNameList;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
 	TObjectPtr<class ACharacterBase> MyCharacter;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
 	TObjectPtr<class AController> MyController;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
 	TObjectPtr<class USkeletalMeshComponent> MyMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
 	TObjectPtr<class UAnimInstanceBase> MyAnimInstance;
 
 public:
 	bool IsInitialized() const { return bIsInitialized; }
-
-	FString GetCurrentStateName() const { return CurrentStateName.ToString(); }
-	int32 GetCurrentStateIndex() const { return Index; }
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsValidValues() const;

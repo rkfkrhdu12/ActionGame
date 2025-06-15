@@ -3,3 +3,6 @@
 
 #include "BGame/Utility/CustomEnumRow.h"
 
+FCustomEnumRow::FCustomEnumRow()
+{
+}

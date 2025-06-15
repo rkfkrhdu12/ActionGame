@@ -13,10 +13,12 @@ USTRUCT(BlueprintType)
 struct ACTIONGAME_API FCustomEnumRow : public FTableRowBase
 {
 	GENERATED_BODY()
+public:
+	FCustomEnumRow();
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Enum Row")
+	int32 ID = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Enum Row")
-	int32 ID;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Custom Enum Row")
-	FName Name;
+	FName Name = "";
 };

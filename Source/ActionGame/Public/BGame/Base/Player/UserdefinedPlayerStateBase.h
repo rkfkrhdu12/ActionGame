@@ -15,9 +15,5 @@ UCLASS()
 class ACTIONGAME_API UUserdefinedPlayerStateBase : public UUserdefinedState
 {
 	GENERATED_BODY()
-
-public:
-	virtual void Initialize(ACharacterBase* Character, int32 ID) override;
-
 };
 

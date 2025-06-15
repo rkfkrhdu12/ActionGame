@@ -14,16 +14,15 @@ class ACTIONGAME_API UStateManagerComponent : public UActorComponent
 public:	
 	UStateManagerComponent();
 
+	UFUNCTION(BlueprintCallable)
 	void ChangeState(const FName& NextState);
+protected:
+	virtual void BeginPlay() override;
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class APlayerCharacterBase* MyCharacter = nullptr;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	class APlayerControllerBase* MyController = nullptr;
-	void InitializeComponents();
+	UPROPERTY(EditAnywhere)
+	class ACharacterBase* MyCharacter = nullptr;
 
-
-	FName CurrentState = "";
-	
+	UPROPERTY(EditAnywhere)
+	FName CurrentEnableStateName;
 };
