@@ -24,6 +24,9 @@ public:
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf = "Target", DataTablePin="EnumTable", RowNamePin="State"), Category="State")
 	static void ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State);
 
+	UFUNCTION(BlueprintCallable, meta=(DataTablePin="DataTable", RowNamePin="RowData"), Category="State")
+	static bool IsCompareTableData(UDataTable* DataTable, FName RowData, FName CompareName);
+	
 	/////////////////////////////// Delegate / Event
 public:
 	////////////////////////// State
@@ -38,12 +41,9 @@ public:
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = State, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
 	FOnStateChanged OnPostStateChanged;
 
-	///////////////////////// Input
-	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
-	FOnCharacterInputVector2D OnInputMoveDirection;
-	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
-	FOnCharacterInput OnInputAttack;
-
+	///////////////////////// Notify
+	FOnAnimNotify OnAnimNotify;
+	
 	//////////////////////////////// Components
 protected:	
 	//					   State Manager	
@@ -68,10 +68,27 @@ public: //		Get Function
 	class UActionManagerComponent* GetActionManager() const { return ActionManager; }
 	class UStateManagerComponent* GetStateManager() const { return StateManager; }
 
-	auto GetStateIndex(const FName& StateName) const -> int32;
+	UFUNCTION(BlueprintCallable)
+	int32 GetStateIndex(const FName& StateName) const;
 
 	TArray<class UUserdefinedState*> GetStateClassList() const { return StateClassList; }
 	TArray<FName> GetStateNames() const { return StateNames; }
+
+	UFUNCTION(BlueprintCallable)
+	FName GetCurrentStateName() const;
+
+
+
+
+
+
+
+
+
+
+
+
+	
 	//////////////////////////////// Debug
 public:
 	// virtual void Tick(float DeltaSeconds) override;
@@ -84,11 +101,11 @@ public:
 	{
 		if (StateManager)
 		{
-			UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *StateManager->GetFullName());
+			// UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *StateManager->GetFullName());
 		}
 		else
 		{
-			UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, StateManager != nullptr);
+			// UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, StateManager != nullptr);
 		}
 	}
 

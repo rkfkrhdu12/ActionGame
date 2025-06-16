@@ -15,5 +15,12 @@ UCLASS()
 class ACTIONGAME_API UUserdefinedPlayerStateBase : public UUserdefinedState
 {
 	GENERATED_BODY()
+
+public:
+	virtual void Initialize(ACharacterBase* Character) override;
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controller, meta = (AllowPrivateAccess = "true"))
+	APlayerControllerBase* MyPlayerController;
 };
 

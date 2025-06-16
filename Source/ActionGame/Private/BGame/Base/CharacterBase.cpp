@@ -47,7 +47,6 @@ void ACharacterBase::BeginPlay()
 		for (auto Element : StateClassList)
 			Element->Initialize(this);
 	}
-	
 
 	StateManager = FindComponentByClass<UStateManagerComponent>();
 }
@@ -66,8 +65,19 @@ void ACharacterBase::ChangeState(ACharacterBase* Target, UDataTable* EnumTable, 
 	Target->ChangeState(State);
 }
 
-auto ACharacterBase::GetStateIndex(const FName& StateName) const -> int32
+bool ACharacterBase::IsCompareTableData(UDataTable* DataTable, FName RowData, FName CompareName)
+{
+	return RowData == CompareName;
+}
+int32 ACharacterBase::GetStateIndex(const FName& StateName) const
 {
 	return StateNames.Find(StateName);
+}
+
+FName ACharacterBase::GetCurrentStateName() const
+{
+	if (StateManager) return StateManager->GetCurrentStateName();
+
+	return FName();
 }
 

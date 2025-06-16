@@ -7,6 +7,8 @@
 #include "StateManagerComponent.generated.h"
 
 
+class UUserdefinedState;
+
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class ACTIONGAME_API UStateManagerComponent : public UActorComponent
 {
@@ -16,6 +18,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ChangeState(const FName& NextState);
+
+	void AnimNotify(const UDataTable* DataTablePtr,
+					FName SelectedRowName,
+					const FAnimNotifyEventReference& EventReference) const;
+
+	void InputAttack(bool Value);
+	void InputParry(bool Value);
+	
 protected:
 	virtual void BeginPlay() override;
 	
@@ -25,4 +35,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FName CurrentEnableStateName;
+
+	UPROPERTY()
+	UUserdefinedState* CurrentState = nullptr;
+public:
+	FName GetCurrentStateName() const { return CurrentEnableStateName; }
 };

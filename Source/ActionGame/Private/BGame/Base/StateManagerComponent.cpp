@@ -5,6 +5,7 @@
 
 #include "BGame/Base/CharacterBase.h"
 #include "BGame/Base/UserdefinedState.h"
+#include "BGame/Base/Player/PlayerControllerBase.h"
 
 UStateManagerComponent::UStateManagerComponent()
 {
@@ -34,23 +35,39 @@ void UStateManagerComponent::ChangeState(const FName& NextState)
 			{
 				if (MyCharacter->OnExitState.IsBound())
 					MyCharacter->OnExitState.Broadcast(CurrentEnableStateName);
-
-				List[CurrentIndex]->Disable();
+				
+				CurrentState->Disable();
 			}
 		}
 	}
 
 	if (NextIndex != INDEX_NONE && ChangeSuccess)
 	{
+		CurrentState = List[NextIndex];
 		CurrentEnableStateName = NextState;
 		if (MyCharacter->OnEnterState.IsBound())  MyCharacter->OnEnterState.Broadcast(NextState);
 
-		List[NextIndex]->Enable();
+		CurrentState->Enable();
 	}
 	
 	if (MyCharacter->OnPostStateChanged.IsBound())
 		MyCharacter->OnPostStateChanged.Broadcast(CurrentEnableStateName, NextState);
+}
 
+void UStateManagerComponent::AnimNotify(const UDataTable* DataTablePtr, FName SelectedRowName,
+	const FAnimNotifyEventReference& EventReference) const
+{
+	if (CurrentState) CurrentState->AnimNotify(DataTablePtr, SelectedRowName, EventReference);
+}
+
+void UStateManagerComponent::InputAttack(bool Value)
+{
+	if (CurrentState) CurrentState->InputAttack(Value);
+}
+
+void UStateManagerComponent::InputParry(bool Value)
+{
+	if (CurrentState) CurrentState->InputParry(Value);
 }
 
 void UStateManagerComponent::BeginPlay()
@@ -60,76 +77,24 @@ void UStateManagerComponent::BeginPlay()
 	MyCharacter = Cast<ACharacterBase>(GetOwner());
 	if (MyCharacter)
 	{
+		if (auto MyController = Cast<APlayerControllerBase>(MyCharacter->GetController()))
+		{
+			MyCharacter->OnAnimNotify.AddUObject(this, &UStateManagerComponent::AnimNotify);
+			
+			MyController->OnAttack.AddUObject(this, &UStateManagerComponent::InputAttack);
+			MyController->OnParry.AddUObject(this, &UStateManagerComponent::InputParry);
+		}
+
 		UE_LOG(LogTemp, Display, TEXT("%s BeginPlay %s"), *MyCharacter->GetName(), *GetFullName());
 	
-		// if (MyCharacter->OnStateChanged.IsAlreadyBound(this, &UStateManagerComponent::ChangeState))
-		// 	MyCharacter->OnStateChanged.AddDynamic(this, &UStateManagerComponent::ChangeState);
+		auto List = MyCharacter->GetStateClassList();
+		if (List.Num() != 0)
+		{
+			for (auto Element : List)
+				Element->Initialize(MyCharacter);
+		}
 
 		ChangeState("Idle");
+		
 	}
 }
-//
-// void UStateManagerComponent::ChangeState(const FName& NextState)
-// {
-// 	if (!MyCharacter) return;
-// 	if (CurrentState->GetCurrentStateName() == NextState) return;
-// 	if (!StateClassMap.Contains(NextState)) return;
-//
-// 	// if (MyCharacter->OnPreStateChanged.IsBound()) MyCharacter->OnPreStateChanged.Broadcast(FName(CurrentState->GetCurrentStateName()), NextState);
-//
-// 	bool bSuccess = true;
-// 	if (CurrentState)
-// 	{
-// 		bSuccess = CurrentState->IsChangeState(NextState);
-// 		if (bSuccess)
-// 		{
-// 			CurrentState->Disable();
-// 			if (MyCharacter->OnExitState.IsBound()) MyCharacter->OnExitState.Broadcast(FName(CurrentState->GetCurrentStateName()));
-// 		}
-// 	}
-//
-// 	if (bSuccess)
-// 	{
-// 		CurrentState = StateClassMap[NextState];
-// 		CurrentState->Enable();
-// 		
-// 		if (MyCharacter->OnEnterState.IsBound()) MyCharacter->OnEnterState.Broadcast(FName(CurrentState->GetCurrentStateName()));
-// 	}
-// 	// if (MyCharacter->OnPostStateChanged.IsBound()) MyCharacter->OnPostStateChanged.Broadcast(FName(CurrentState->GetCurrentStateName()), NextState);
-// }
-//
-// void UStateManagerComponent::InitializeState()
-// {
-// 	if (!DataTable || ClassList.Num() == 0) return;
-//
-// 	StateList = DataTable;
-//
-// 	for (UUserdefinedState* State : ClassList)
-// 	{
-// 		FName Name = FName(State->GetCurrentStateName());
-// 		StateClassMap.Add(Name, State);
-// 		StateClassList.Add(Name);
-// 		
-// 		State->Initialize(MyCharacter);
-// 	}
-//
-// 	if (StateClassMap.Contains("Idle"))
-// 	{
-// 		CurrentState = StateClassMap["Idle"];
-// 		CurrentState->Enable();
-// 	}
-// }
-//
-// void UStateManagerComponent::InitializeComponents()
-// {
-// 	if (GetOwner() != nullptr)
-// 	{
-// 		MyCharacter = Cast<APlayerCharacterBase>(GetOwner());
-// 	}
-// }
-
-//
-// int32 UStateManagerComponent::GetStateIndex(FName StateName) const
-// {
-// 	return StateClassList.Find(StateName);
-// }

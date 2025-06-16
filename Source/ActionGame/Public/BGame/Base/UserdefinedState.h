@@ -23,11 +23,14 @@ public:
 	virtual void Disable();
 	virtual void Update(float DeltaTime);
 
-	virtual void AnimStart(UAnimMontage* Montage);
-	virtual void AnimComplete(UAnimMontage* Montage, bool bInterrupted);
-	virtual void AnimBlendIn(UAnimMontage* Montage);
-	virtual void AnimBlendOut(UAnimMontage* Montage, bool bInterrupted);
-	virtual void AnimInterrupted();
+	void AnimNotify(const UDataTable* DataTablePtr,
+	                FName SelectedRowName,
+	                const FAnimNotifyEventReference& EventReference);
+
+	void InputAttack(bool bValue);
+	void InputParry(bool bValue);
+	
+	// BP
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void BeginPlay();
@@ -40,19 +43,15 @@ public:
 	void OnDisable();
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void OnAnimStart(UAnimMontage* Montage);
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void OnAnimComplete(UAnimMontage* Montage, bool bInterrupted);
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void OnAnimBlendIn(UAnimMontage* Montage);
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void OnAnimBlendOut(UAnimMontage* Montage, bool bInterrupted);
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void OnAnimInterrupted();
-	//UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
-	//void OnAnimNotify(FString NotifyName);
-	//void OnAnimNotify_Implementation(FString NotifyName);
+	void OnAnimNotify(const UDataTable* DataTableRef,
+					FName SelectedRowName,
+					const FAnimNotifyEventReference& EventReference);
 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OnAttack(bool bValue);
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OnParry(bool bValue);
+	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool CanChanged(const FName& NextState);
 	bool CanChanged_Implementation(const FName& NextState);
@@ -64,17 +63,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bIsEnabled = false;
 	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = Notify)
-	TArray<FString> NotifyNameList;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
 	TObjectPtr<class ACharacterBase> MyCharacter;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
 	TObjectPtr<class AController> MyController;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
 	TObjectPtr<class USkeletalMeshComponent> MyMesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
-	TObjectPtr<class UAnimInstanceBase> MyAnimInstance;
 
 public:
 	bool IsInitialized() const { return bIsInitialized; }

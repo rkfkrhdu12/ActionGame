@@ -25,14 +25,16 @@ public:
 	void Initialize(APlayerCharacterBase* Player, UEnhancedInputLocalPlayerSubsystem* Subsystem);
 
 public:
+	void Bind(UEnhancedInputComponent* EnhancedInputComponent, class UInputAction* Action, void (UInputManagerComponent::*Func)(const struct FInputActionValue& AxisValue));
 	void BindActions(UEnhancedInputComponent* EnhancedInputComponent);
 
 	static void InputBroadcast(const FOnCharacterInputVector2D& InputDelegate, const FVector2D& AxisValue);
-	static void InputBroadcast(const FOnCharacterInput& InputDelegate, const bool& InputValue);
+	static void InputBroadcast(const FOnPlayerInput& InputDelegate, const bool& InputValue);
 	
 	void InputMove(const struct FInputActionValue& AxisValue);
 	void InputLook(const struct FInputActionValue& AxisValue);
 	void InputAttack(const struct FInputActionValue& AxisValue);
+	void InputParry(const struct FInputActionValue& AxisValue);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character")
@@ -51,7 +53,8 @@ protected:
 	TObjectPtr<class UInputAction> LookAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> AttackAction;
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> ParryAction;
 	////												  ////
 	//					Default Variable					// 
 	////												  ////
@@ -59,6 +62,10 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	bool bInputAttack = false;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+	bool bInputParry = false;
+	
 public:
 	bool IsInputAttack() const { return bInputAttack;}
+	bool IsInputParry() const { return bInputParry; }
 };

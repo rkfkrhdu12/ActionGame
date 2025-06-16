@@ -30,24 +30,23 @@ void UActionManagerComponent::BeginPlay()
 		{
 			if (auto MyAnimInstance = Cast<UAnimInstanceBase>(MyMesh->GetAnimInstance()))
 			{
-				if (!MyAnimInstance->OnMontageStarted.IsAlreadyBound(this,		&UActionManagerComponent::AnimMontageStarted))
-					MyAnimInstance->OnMontageStarted.AddDynamic(this,			&UActionManagerComponent::AnimMontageStarted);
-				if (!MyAnimInstance->OnMontageEnded.IsAlreadyBound(this,		&UActionManagerComponent::AnimMontageEnded))
-					MyAnimInstance->OnMontageEnded.AddDynamic(this,				&UActionManagerComponent::AnimMontageEnded);
-				if (!MyAnimInstance->OnMontageBlendedIn.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageBlendedIn))
-					MyAnimInstance->OnMontageBlendedIn.AddDynamic(this,			&UActionManagerComponent::AnimMontageBlendedIn);
-				if (!MyAnimInstance->OnMontageBlendingOut.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageBlendedOut))
-					MyAnimInstance->OnMontageBlendingOut.AddDynamic(this,		&UActionManagerComponent::AnimMontageBlendedOut);
-				if (!MyAnimInstance->OnPlayMontageNotifyBegin.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageNotifyBegin))
-					MyAnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this,		&UActionManagerComponent::AnimMontageNotifyBegin);
-				if (!MyAnimInstance->OnPlayMontageNotifyEnd.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageNotifyEnd))
-					MyAnimInstance->OnPlayMontageNotifyEnd.AddDynamic(this,		&UActionManagerComponent::AnimMontageNotifyEnd);
+				//if (!MyAnimInstance->OnMontageStarted.IsAlreadyBound(this,		&UActionManagerComponent::AnimMontageStarted))
+				//	MyAnimInstance->OnMontageStarted.AddDynamic(this,			&UActionManagerComponent::AnimMontageStarted);
+				//if (!MyAnimInstance->OnMontageEnded.IsAlreadyBound(this,		&UActionManagerComponent::AnimMontageEnded))
+				//	MyAnimInstance->OnMontageEnded.AddDynamic(this,				&UActionManagerComponent::AnimMontageEnded);
+				//if (!MyAnimInstance->OnMontageBlendedIn.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageBlendedIn))
+				//	MyAnimInstance->OnMontageBlendedIn.AddDynamic(this,			&UActionManagerComponent::AnimMontageBlendedIn);
+				//if (!MyAnimInstance->OnMontageBlendingOut.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageBlendedOut))
+				//	MyAnimInstance->OnMontageBlendingOut.AddDynamic(this,		&UActionManagerComponent::AnimMontageBlendedOut);
+				//if (!MyAnimInstance->OnPlayMontageNotifyBegin.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageNotifyBegin))
+				//	MyAnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this,		&UActionManagerComponent::AnimMontageNotifyBegin);
+				//if (!MyAnimInstance->OnPlayMontageNotifyEnd.IsAlreadyBound(this,	&UActionManagerComponent::AnimMontageNotifyEnd))
+				//	MyAnimInstance->OnPlayMontageNotifyEnd.AddDynamic(this,		&UActionManagerComponent::AnimMontageNotifyEnd);
 		
 			}
 		}
 	}
 }
-
 
 // Called every frame
 void UActionManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -56,49 +55,3 @@ void UActionManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType
 
 	// ...
 }
-
-
-
-
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UActionManagerComponent::AnimMontageStarted(class UAnimMontage* Montage)
-{
-	// if (CurrentState != nullptr) CurrentState->AnimStart(Montage);
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UActionManagerComponent::AnimMontageEnded(class UAnimMontage* Montage, bool bInterrupted)
-{
-	// if (CurrentState != nullptr) CurrentState->AnimComplete(Montage, bInterrupted);
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UActionManagerComponent::AnimMontageBlendedIn(class UAnimMontage* Montage)
-{
-	// if (CurrentState != nullptr) CurrentState->AnimBlendIn(Montage);
-}
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UActionManagerComponent::AnimMontageBlendedOut(class UAnimMontage* Montage, bool bInterrupted)
-{
-	// if (CurrentState != nullptr) CurrentState->AnimBlendOut(Montage, bInterrupted);
-}
-
-
-void UActionManagerComponent::AnimMontageNotifyBegin(FName NotifyName,
-												const FBranchingPointNotifyPayload& BranchingPointPayload)
-{
-	// UE_LOG(LogTemp, Log, TEXT("UActionManagerComponent::NotifyBegin"));
-}
-void UActionManagerComponent::AnimMontageNotifyEnd(FName NotifyName,
-	const FBranchingPointNotifyPayload& BranchingPointPayload)
-{
-	// UE_LOG(LogTemp, Log, TEXT("UActionManagerComponent::NotifyEnd"));
-}
-
-void UActionManagerComponent::TestFuc()
-{
-	// UE_LOG(LogTemp, Log, TEXT("UActionManagerComponent::TestFu"));
-}
-

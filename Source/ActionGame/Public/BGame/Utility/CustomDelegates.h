@@ -15,3 +15,13 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChange, const FName&, StateN
 
 UDELEGATE(BlueprintCallable)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateChanged, const FName&, OldState,const FName&, NewState);
+
+
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerInputVector2D, FVector2D Value);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerInput, bool InputValue);
+
+// Character Notify Delegate
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAnimNotify, const UDataTable* DataTableRef,
+                                               FName SelectedRowName,
+                                               const FAnimNotifyEventReference& EventReference);

@@ -3,9 +3,7 @@
 
 #include "BGame/Base/UserdefinedState.h"
 
-#include "BGame/Base/AnimInstanceBase.h"
 #include "BGame/Base/CharacterBase.h"
-#include "BGame/Utility/CustomEnumRow.h"
 
 void UUserdefinedState::Initialize(ACharacterBase* Character)
 {
@@ -16,10 +14,6 @@ void UUserdefinedState::Initialize(ACharacterBase* Character)
 	{
 		MyController = MyCharacter->GetController();
 		MyMesh = MyCharacter->GetMesh();
-		if (MyMesh)
-		{
-			MyAnimInstance = Cast<UAnimInstanceBase>(MyMesh->GetAnimInstance());
-		}
 	}
 	
 	bIsInitialized = true;
@@ -29,7 +23,7 @@ void UUserdefinedState::Initialize(ACharacterBase* Character)
 
 void UUserdefinedState::Awake()
 {
-	BeginPlay();
+	if (IsValidValues()) BeginPlay();
 }
 
 void UUserdefinedState::Enable()
@@ -38,75 +32,92 @@ void UUserdefinedState::Enable()
 	
 	bIsEnabled = true;
 
-	OnEnable();
+	if (IsValidValues()) OnEnable();
 }
 
 void UUserdefinedState::Disable()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s : End"), *GetName());
+	// UE_LOG(LogTemp, Warning, TEXT("%s : End"), *GetName());
 
 	bIsEnabled = false;
 	
-	OnDisable();
+	if (IsValidValues()) OnDisable();
 }
 
 void UUserdefinedState::Update(float DeltaTime)
 {
-	Tick(DeltaTime);
+	if (IsValidValues()) Tick(DeltaTime);
 }
 
-void UUserdefinedState::AnimStart(UAnimMontage* Montage)
+void UUserdefinedState::AnimNotify(const UDataTable* DataTablePtr,
+					FName SelectedRowName,
+					const FAnimNotifyEventReference& EventReference)
 {
-	OnAnimStart(Montage);
+	if (IsValidValues()) OnAnimNotify(DataTablePtr, SelectedRowName, EventReference);
 }
 
-void UUserdefinedState::AnimComplete(UAnimMontage* Montage, bool bInterrupted)
+void UUserdefinedState::InputAttack(bool bValue)
 {
-	if (bInterrupted)
-	{
-		AnimInterrupted();
-		return;
-	}
-	else
-	{
-		OnAnimComplete(Montage, bInterrupted);
-	}
+	if (IsValidValues()) OnAttack(bValue);
 }
 
-void UUserdefinedState::AnimBlendIn(UAnimMontage* Montage)
+void UUserdefinedState::InputParry(bool bValue)
 {
-	OnAnimBlendIn(Montage);
-}
-
-void UUserdefinedState::AnimBlendOut(UAnimMontage* Montage, bool bInterrupted)
-{
-	if (bInterrupted)
-	{
-		AnimInterrupted();
-		return;
-	}
-	else
-	{
-		OnAnimBlendOut(Montage, bInterrupted);
-	}
-}
-
-void UUserdefinedState::AnimInterrupted()
-{
-	OnAnimInterrupted();
+	if (IsValidValues()) OnParry(bValue);
 }
 
 bool UUserdefinedState::CanChanged_Implementation(const FName& NextState)
 {
-	// UE_LOG(LogTemp, Warning, TEXT("%s : IsChangeState"), *CurrentStateName);
 	return true;
 }
 
 bool UUserdefinedState::IsValidValues() const
 {
-	if (MyCharacter && MyController && MyMesh && MyAnimInstance) return true;
+	if (MyCharacter && MyController && MyMesh) return true;
 
-	UE_LOG(LogTemp, Warning, TEXT("%s : Invalid State"), *GetName());
-
+	if (!MyCharacter)
+		UE_LOG(LogTemp, Warning, TEXT("%s : MyCharacter Invalid State"), *GetFullName());
+	if (!MyController)
+		UE_LOG(LogTemp, Warning, TEXT("%s : MyController Invalid State"), *GetFullName());
+	if (!MyMesh)
+		UE_LOG(LogTemp, Warning, TEXT("%s : MyMesh Invalid State"), *GetFullName());
+	
 	return false;
 }
+
+
+
+
+
+
+
+//void UUserdefinedState::AnimStart(UAnimMontage* Montage)
+//{
+//	if (IsValidValues()) OnAnimStart(Montage);
+//}
+//
+//void UUserdefinedState::AnimComplete(UAnimMontage* Montage, bool bInterrupted)
+//{
+//	if (bInterrupted)
+//		if (IsValidValues()) AnimInterrupted();
+//	else
+//		if (IsValidValues()) OnAnimComplete(Montage, bInterrupted);
+//}
+//
+//void UUserdefinedState::AnimBlendIn(UAnimMontage* Montage)
+//{
+//	if (IsValidValues()) OnAnimBlendIn(Montage);
+//}
+//
+//void UUserdefinedState::AnimBlendOut(UAnimMontage* Montage, bool bInterrupted)
+//{
+//	if (bInterrupted)
+//		if (IsValidValues()) AnimInterrupted();
+//	else
+//		if (IsValidValues()) OnAnimBlendOut(Montage, bInterrupted);
+//}
+//
+//void UUserdefinedState::AnimInterrupted()
+//{
+//	if (IsValidValues()) OnAnimInterrupted();
+//}
