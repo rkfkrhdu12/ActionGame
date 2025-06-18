@@ -25,75 +25,81 @@ void UInputManagerComponent::Initialize(APlayerCharacterBase* Player, UEnhancedI
 }
 
 void UInputManagerComponent::Bind(UEnhancedInputComponent* EnhancedInputComponent, class UInputAction* Action,
-	void(UInputManagerComponent::* Func)(const struct FInputActionValue& AxisValue))
+                                  void(UInputManagerComponent::* Func)(const struct FInputActionValue& AxisValue))
 {
 	if (!EnhancedInputComponent) return;
 
 	if (Action == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("UInputManagerComponent::Bind: Action is null"));
-		return;
+		UE_LOG(LogTemp, Error, TEXT("UInputManagerComponent::Bind: Action is null")); return;
 	}
-
-	EnhancedInputComponent->BindAction(Action, ETriggerEvent::Triggered, this,
-		Func);
+	
+	EnhancedInputComponent->BindAction(Action, ETriggerEvent::Triggered, this, Func);
 }
-
 
 void UInputManagerComponent::BindActions(UEnhancedInputComponent* EnhancedInputComponent)
 {
-	if (EnhancedInputComponent)
+	constexpr std::pair<EPlayerInputType, void (UInputManagerComponent::*)(const FInputActionValue&)> BindPairs[] = {
+	{ EPlayerInputType::Move, &UInputManagerComponent::Move },
+	{ EPlayerInputType::Look, &UInputManagerComponent::Look },
+	{ EPlayerInputType::Attack, &UInputManagerComponent::Attack },
+	{ EPlayerInputType::Parry, &UInputManagerComponent::Parry },
+	{ EPlayerInputType::Dash, &UInputManagerComponent::Dash },
+	{ EPlayerInputType::LookAtTarget, &UInputManagerComponent::LookAtTarget },
+	};
+
+	for (const auto& Pair : BindPairs)
 	{
-		Bind(EnhancedInputComponent,MoveAction, &UInputManagerComponent::InputMove);
-		Bind(EnhancedInputComponent,LookAction, &UInputManagerComponent::InputLook);
-		Bind(EnhancedInputComponent,AttackAction, &UInputManagerComponent::InputAttack);
-		Bind(EnhancedInputComponent,ParryAction, &UInputManagerComponent::InputParry);
+		if (InputMappings.Contains(Pair.first)) Bind(EnhancedInputComponent, InputMappings[Pair.first], Pair.second);
 	}
 }
 
-void UInputManagerComponent::InputBroadcast(const FOnCharacterInputVector2D& InputDelegate, const FVector2D& AxisValue)
+void UInputManagerComponent::InputBroadcast(const FOnCharacterInputVector2D* InputDelegate, const FVector2D AxisValue)
 {
-	InputDelegate.Broadcast(AxisValue);
-}
-
-void UInputManagerComponent::InputBroadcast(const FOnPlayerInput& InputDelegate, const bool& InputValue)
-{
-	InputDelegate.Broadcast(InputValue);
-}
-
-
-// ReSharper disable once CppMemberFunctionMayBeConst
-void UInputManagerComponent::InputMove(const struct FInputActionValue& AxisValue)
-{
-	if (!MyController) return;
+	if (InputDelegate == nullptr) return;
 	
-	InputBroadcast(MyController->OnInputMoveDirection, AxisValue.Get<FVector2D>());
+	InputDelegate->Broadcast(AxisValue);
+}
+
+void UInputManagerComponent::InputBroadcast(const FOnPlayerInput* InputDelegate, const bool InputValue)
+{
+	if (InputDelegate == nullptr) return;
+	
+	InputDelegate->Broadcast(InputValue);
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void UInputManagerComponent::InputLook(const struct FInputActionValue& AxisValue)
+void UInputManagerComponent::Move(const struct FInputActionValue& AxisValue)
 {
-	if (!MyController) return;
-	
-	InputBroadcast(MyController->OnInputLookDirection, AxisValue.Get<FVector2D>());
+	InputBroadcast(&MyController->OnInputMoveDirection, AxisValue.Get<FVector2D>());
 }
 
 // ReSharper disable once CppMemberFunctionMayBeConst
-void UInputManagerComponent::InputAttack(const struct FInputActionValue& AxisValue)
+void UInputManagerComponent::Look(const struct FInputActionValue& AxisValue)
 {
-	if (!MyController) return;
-	
-	bInputAttack = AxisValue.Get<bool>();
-	
-	InputBroadcast(MyController->OnAttack, bInputAttack);
+	InputBroadcast(&MyController->OnInputLookDirection, AxisValue.Get<FVector2D>());
 }
 
-void UInputManagerComponent::InputParry(const struct FInputActionValue& AxisValue)
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputManagerComponent::Attack(const struct FInputActionValue& AxisValue)
 {
-	if (!MyController) return;
-	
-	bInputParry = AxisValue.Get<bool>();
-	
-	InputBroadcast(MyController->OnParry, bInputParry);
-	
+	InputBroadcast(&MyController->OnInputAttack, AxisValue.Get<bool>());
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputManagerComponent::Parry(const struct FInputActionValue& AxisValue)
+{
+	InputBroadcast(&MyController->OnInputParry, AxisValue.Get<bool>());
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputManagerComponent::Dash(const struct FInputActionValue& AxisValue)
+{
+	InputBroadcast(&MyController->OnInputDash, AxisValue.Get<bool>());
+}
+
+// ReSharper disable once CppMemberFunctionMayBeConst
+void UInputManagerComponent::LookAtTarget(const struct FInputActionValue& AxisValue)
+{
+	InputBroadcast(&MyController->OnInputLookAtTarget, AxisValue.Get<bool>());
 }

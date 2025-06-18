@@ -56,15 +56,6 @@ void UUserdefinedState::AnimNotify(const UDataTable* DataTablePtr,
 	if (IsValidValues()) OnAnimNotify(DataTablePtr, SelectedRowName, EventReference);
 }
 
-void UUserdefinedState::InputAttack(bool bValue)
-{
-	if (IsValidValues()) OnAttack(bValue);
-}
-
-void UUserdefinedState::InputParry(bool bValue)
-{
-	if (IsValidValues()) OnParry(bValue);
-}
 
 bool UUserdefinedState::CanChanged_Implementation(const FName& NextState)
 {

@@ -77,17 +77,6 @@ public: //		Get Function
 	UFUNCTION(BlueprintCallable)
 	FName GetCurrentStateName() const;
 
-
-
-
-
-
-
-
-
-
-
-
 	
 	//////////////////////////////// Debug
 public:
@@ -101,11 +90,13 @@ public:
 	{
 		if (StateManager)
 		{
-			// UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *StateManager->GetFullName());
+			//UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(),
+			//	*fName, *StateManager->GetFullName());
 		}
 		else
 		{
-			// UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, StateManager != nullptr);
+			//UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(),
+			//	*fName, StateManager != nullptr);
 		}
 	}
 

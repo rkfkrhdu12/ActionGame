@@ -27,9 +27,6 @@ public:
 	                FName SelectedRowName,
 	                const FAnimNotifyEventReference& EventReference);
 
-	void InputAttack(bool bValue);
-	void InputParry(bool bValue);
-	
 	// BP
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
@@ -46,11 +43,6 @@ public:
 	void OnAnimNotify(const UDataTable* DataTableRef,
 					FName SelectedRowName,
 					const FAnimNotifyEventReference& EventReference);
-
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void OnAttack(bool bValue);
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void OnParry(bool bValue);
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool CanChanged(const FName& NextState);

@@ -3,6 +3,8 @@
 #include "BGame/Base/Player/PlayerCharacterBase.h"
 
 #include "BGame/Base/AnimInstanceBase.h"
+#include "BGame/Base/Player/PlayerControllerBase.h"
+#include "BGame/Base/Player/PlayerStateManagerComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -25,4 +27,22 @@ APlayerCharacterBase::APlayerCharacterBase()
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	CameraComponent->SetupAttachment(CameraArmComponent);
 	CameraComponent->bUsePawnControlRotation = false;
+
+	StateManager = CreateDefaultSubobject<UPlayerStateManagerComponent>(TEXT("StateManager"));
+}
+
+void APlayerCharacterBase::OnLookAtMode()
+{
+	if (!MyPlayerController) return;
+
+	if (MyPlayerController->IsLookAtTarget())
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		CameraComponent->bUsePawnControlRotation = true;
+	}
+	else
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		CameraComponent->bUsePawnControlRotation = false;
+	}
 }

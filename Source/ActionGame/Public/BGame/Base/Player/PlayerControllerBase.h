@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerInputType.h"
 #include "BGame/Utility/CustomDelegates.h"
 #include "GameFramework/PlayerController.h"
 #include "PlayerControllerBase.generated.h"
@@ -24,21 +25,21 @@ public:
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
 	FOnCharacterInputVector2D OnInputMoveDirection;
 
-	FOnPlayerInput OnAttack;
-	FOnPlayerInput OnParry;
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
+	FOnPlayerInput OnInputAttack;
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
+	FOnPlayerInput OnInputParry;
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
+	FOnPlayerInput OnInputDash;
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
+	FOnPlayerInput OnInputLookAtTarget;
 	
 protected:
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void SetupInputComponent() override;
 
-	void InputAttack(bool Value);
-	UFUNCTION(BlueprintCallable, Category = Input, BlueprintImplementableEvent)
-	void OnInputKeyAttack(bool Value);
-	void InputParry(bool Value);
-	UFUNCTION(BlueprintCallable, Category = Input, BlueprintImplementableEvent)
-	void OnInputKeyParry(bool Value);
 protected:
-	//											 
+	//			 
 	//				Other Object ptr Variable			
 	//											 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -53,11 +54,16 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
 	bool IsCanMoveCamera = true;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
+	bool bIsLookAtTarget = false;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
+	AActor* LookAtTarget = nullptr;
 private:
 	void InitializeInputSystem() const;
 	void BindInputActions() const;
 
 public:
 	UInputManagerComponent* GetInputManagerComponent() const { return InputManager; }
+	bool IsLookAtTarget() const { return bIsLookAtTarget; }
 };

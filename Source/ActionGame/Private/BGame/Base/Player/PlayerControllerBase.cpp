@@ -22,9 +22,6 @@ void APlayerControllerBase::OnPossess(APawn* aPawn)
 
 	MyCharacter = Cast<APlayerCharacterBase>(aPawn);
 	InitializeInputSystem();
-
-	OnAttack.AddUObject(this, &APlayerControllerBase::InputAttack);
-	OnParry.AddUObject(this, &APlayerControllerBase::InputParry);
 }
 
 void APlayerControllerBase::SetupInputComponent()
@@ -32,16 +29,6 @@ void APlayerControllerBase::SetupInputComponent()
 	Super::SetupInputComponent();
 
 	BindInputActions();
-}
-
-void APlayerControllerBase::InputAttack(bool Value)
-{
-	OnInputKeyAttack(Value);
-}
-
-void APlayerControllerBase::InputParry(bool Value)
-{
-	OnInputKeyParry(Value);
 }
 
 //					   Input System						

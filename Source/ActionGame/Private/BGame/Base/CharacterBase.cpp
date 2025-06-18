@@ -17,14 +17,16 @@ ACharacterBase::ACharacterBase()
 	
 	// AssignDefaultSubobject(StateManager);
 	AssignDefaultSubobject(ActionManager);
-	StateManager = CreateDefaultSubobject<UStateManagerComponent>(TEXT("StateManager"));
-
+	
 	TestFunc("Initialize");
 }
 
 void ACharacterBase::PostInitProperties()
 {
 	Super::PostInitProperties();
+	
+	TestFunc("PostInitProperties");
+	
 	if (HasAnyFlags(RF_ClassDefaultObject)) return;
 	
 	if (StateList)
@@ -40,6 +42,9 @@ void ACharacterBase::PostInitProperties()
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	TestFunc("BeginPlay");
+	
 	if (HasAnyFlags(RF_ClassDefaultObject)) return;
 	
 	if (StateClassList.Num() != 0)
@@ -48,7 +53,7 @@ void ACharacterBase::BeginPlay()
 			Element->Initialize(this);
 	}
 
-	StateManager = FindComponentByClass<UStateManagerComponent>();
+	TestFunc("BeginPlay After");
 }
 
 void ACharacterBase::ChangeState(const FName& NextState) const

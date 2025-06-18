@@ -7,7 +7,7 @@
 UDELEGATE(BlueprintCallable)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterInputVector2D, FVector2D, Value);
 UDELEGATE(BlueprintCallable)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterInput, bool, InputValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerInput, bool, InputValue);
 
 // Character State Delegate
 UDELEGATE(BlueprintCallable)
@@ -19,7 +19,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnStateChanged, const FName&, OldS
 
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerInputVector2D, FVector2D Value);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnPlayerInput, bool InputValue);
 
 // Character Notify Delegate
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnAnimNotify, const UDataTable* DataTableRef,

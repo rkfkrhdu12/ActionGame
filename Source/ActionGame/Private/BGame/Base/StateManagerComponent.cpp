@@ -60,15 +60,6 @@ void UStateManagerComponent::AnimNotify(const UDataTable* DataTablePtr, FName Se
 	if (CurrentState) CurrentState->AnimNotify(DataTablePtr, SelectedRowName, EventReference);
 }
 
-void UStateManagerComponent::InputAttack(bool Value)
-{
-	if (CurrentState) CurrentState->InputAttack(Value);
-}
-
-void UStateManagerComponent::InputParry(bool Value)
-{
-	if (CurrentState) CurrentState->InputParry(Value);
-}
 
 void UStateManagerComponent::BeginPlay()
 {
@@ -77,14 +68,8 @@ void UStateManagerComponent::BeginPlay()
 	MyCharacter = Cast<ACharacterBase>(GetOwner());
 	if (MyCharacter)
 	{
-		if (auto MyController = Cast<APlayerControllerBase>(MyCharacter->GetController()))
-		{
-			MyCharacter->OnAnimNotify.AddUObject(this, &UStateManagerComponent::AnimNotify);
-			
-			MyController->OnAttack.AddUObject(this, &UStateManagerComponent::InputAttack);
-			MyController->OnParry.AddUObject(this, &UStateManagerComponent::InputParry);
-		}
-
+		MyCharacter->OnAnimNotify.AddUObject(this, &UStateManagerComponent::AnimNotify);
+		
 		UE_LOG(LogTemp, Display, TEXT("%s BeginPlay %s"), *MyCharacter->GetName(), *GetFullName());
 	
 		auto List = MyCharacter->GetStateClassList();

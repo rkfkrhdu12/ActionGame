@@ -6,6 +6,7 @@
 #include "Engine/DataTable.h"
 #include "CustomEnumRow.generated.h"
 
+class UUserdefinedState;
 /**
  * 
  */

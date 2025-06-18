@@ -3,11 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PlayerInputType.h"
 #include "Components/ActorComponent.h"
 #include "BGame/Utility/CustomDelegates.h"
 #include "InputManagerComponent.generated.h"
 
 
+struct FInputActionInstance;
 class APlayerCharacterBase;
 class APlayerControllerBase;
 
@@ -28,13 +30,16 @@ public:
 	void Bind(UEnhancedInputComponent* EnhancedInputComponent, class UInputAction* Action, void (UInputManagerComponent::*Func)(const struct FInputActionValue& AxisValue));
 	void BindActions(UEnhancedInputComponent* EnhancedInputComponent);
 
-	static void InputBroadcast(const FOnCharacterInputVector2D& InputDelegate, const FVector2D& AxisValue);
-	static void InputBroadcast(const FOnPlayerInput& InputDelegate, const bool& InputValue);
+	void Move(const struct FInputActionValue& AxisValue);
+	void Look(const struct FInputActionValue& AxisValue);
+	void Attack(const struct FInputActionValue& AxisValue);
+	void Parry(const struct FInputActionValue& AxisValue);
+	void Dash(const struct FInputActionValue& AxisValue);
+	void LookAtTarget(const struct FInputActionValue& AxisValue);
 	
-	void InputMove(const struct FInputActionValue& AxisValue);
-	void InputLook(const struct FInputActionValue& AxisValue);
-	void InputAttack(const struct FInputActionValue& AxisValue);
-	void InputParry(const struct FInputActionValue& AxisValue);
+protected:
+	static void InputBroadcast(const FOnCharacterInputVector2D* InputDelegate, const FVector2D AxisValue);
+	static void InputBroadcast(const FOnPlayerInput* InputDelegate, const bool InputValue);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character")
@@ -47,16 +52,11 @@ protected:
 	////												  ////
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputMappingContext> CurrentMappingContext;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> MoveAction;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> LookAction;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> AttackAction;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<class UInputAction> ParryAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	TMap<EPlayerInputType, UInputAction*> InputMappings;
 	////												  ////
-	//					Default Variable					// 
+	//					Default Variable					//
 	////												  ////
 	bool bInitialize = false;
 
@@ -64,7 +64,7 @@ protected:
 	bool bInputAttack = false;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	bool bInputParry = false;
-	
+
 public:
 	bool IsInputAttack() const { return bInputAttack;}
 	bool IsInputParry() const { return bInputParry; }
