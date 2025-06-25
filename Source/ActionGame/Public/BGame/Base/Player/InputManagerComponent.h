@@ -39,7 +39,7 @@ public:
 	
 protected:
 	static void InputBroadcast(const FOnCharacterInputVector2D* InputDelegate, const FVector2D AxisValue);
-	static void InputBroadcast(const FOnPlayerInput* InputDelegate, const bool InputValue);
+	static void InputBroadcast(const FOnCharacterInput* InputDelegate, const bool InputValue);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Character")
@@ -59,13 +59,4 @@ protected:
 	//					Default Variable					//
 	////												  ////
 	bool bInitialize = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	bool bInputAttack = false;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
-	bool bInputParry = false;
-
-public:
-	bool IsInputAttack() const { return bInputAttack;}
-	bool IsInputParry() const { return bInputParry; }
 };

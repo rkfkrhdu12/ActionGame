@@ -19,12 +19,14 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnLookAtMode();
-public:
+	
+	virtual void PossessedBy(AController* NewController) override;
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class USpringArmComponent> CameraArmComponent = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UCameraComponent> CameraComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Controller", meta = (AllowPrivateAccess = "true"))
-	APlayerControllerBase* MyPlayerController;
+	APlayerControllerBase* MyPlayerController = nullptr;
 };

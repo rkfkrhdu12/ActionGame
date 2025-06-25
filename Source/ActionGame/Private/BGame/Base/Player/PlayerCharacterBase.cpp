@@ -3,11 +3,16 @@
 #include "BGame/Base/Player/PlayerCharacterBase.h"
 
 #include "BGame/Base/AnimInstanceBase.h"
+#include "BGame/Base/StateEventHandle.h"
 #include "BGame/Base/Player/PlayerControllerBase.h"
 #include "BGame/Base/Player/PlayerStateManagerComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+#define AssignDefaultSubobject(Variable)\
+Variable = CreateDefaultSubobject<std::remove_reference_t<decltype(*Variable)>>(#Variable)
+
 
 APlayerCharacterBase::APlayerCharacterBase()
 {
@@ -28,7 +33,11 @@ APlayerCharacterBase::APlayerCharacterBase()
 	CameraComponent->SetupAttachment(CameraArmComponent);
 	CameraComponent->bUsePawnControlRotation = false;
 
-	StateManager = CreateDefaultSubobject<UPlayerStateManagerComponent>(TEXT("StateManager"));
+	StateManagerComp = CreateDefaultSubobject<UPlayerStateManagerComponent>(TEXT("StateManager"));
+	
+	AssignDefaultSubobject(StateEventHandler);
+	
+	TestFunc("APlayerCharacterBase Initialize");
 }
 
 void APlayerCharacterBase::OnLookAtMode()
@@ -38,11 +47,16 @@ void APlayerCharacterBase::OnLookAtMode()
 	if (MyPlayerController->IsLookAtTarget())
 	{
 		GetCharacterMovement()->bOrientRotationToMovement = false;
-		CameraComponent->bUsePawnControlRotation = true;
 	}
 	else
 	{
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		CameraComponent->bUsePawnControlRotation = false;
 	}
+}
+
+void APlayerCharacterBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	MyPlayerController = Cast<APlayerControllerBase>(NewController);
 }

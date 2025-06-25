@@ -61,7 +61,7 @@ void UInputManagerComponent::InputBroadcast(const FOnCharacterInputVector2D* Inp
 	InputDelegate->Broadcast(AxisValue);
 }
 
-void UInputManagerComponent::InputBroadcast(const FOnPlayerInput* InputDelegate, const bool InputValue)
+void UInputManagerComponent::InputBroadcast(const FOnCharacterInput* InputDelegate, const bool InputValue)
 {
 	if (InputDelegate == nullptr) return;
 	

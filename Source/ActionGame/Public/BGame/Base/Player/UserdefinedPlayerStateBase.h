@@ -23,6 +23,7 @@ public:
 
 	void InputKey(EPlayerInputType Type, bool bValue);
 	
+public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnInputKey(EPlayerInputType Type, bool bValue);
 
@@ -30,9 +31,9 @@ public:
 	void ChangeCharacterState(UDataTable* EnumTable, FName State);
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controller, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ControlledObject, meta = (AllowPrivateAccess = "true"))
 	APlayerCharacterBase* MyPlayerCharacter;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Controller, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = ControlledObject, meta = (AllowPrivateAccess = "true"))
 	APlayerControllerBase* MyPlayerController;
 };
 

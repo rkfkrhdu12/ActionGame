@@ -25,6 +25,9 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+
+public:
+	virtual void PostInitProperties() override;
 	
 protected:
 	UPROPERTY(EditAnywhere)

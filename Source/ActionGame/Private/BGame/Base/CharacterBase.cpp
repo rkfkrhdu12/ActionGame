@@ -4,8 +4,10 @@
 #include "BGame/Base/CharacterBase.h"
 
 #include "BGame/Base/ActionManagerComponent.h"
+#include "BGame/Base/StateEventHandle.h"
 #include "BGame/Base/StateManagerComponent.h"
 #include "BGame/Base/UserdefinedState.h"
+#include "Kismet/KismetMathLibrary.h"
 
 #define AssignDefaultSubobject(Variable)\
 	Variable = CreateDefaultSubobject<std::remove_reference_t<decltype(*Variable)>>(#Variable)
@@ -14,10 +16,7 @@
 ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-	
-	// AssignDefaultSubobject(StateManager);
-	AssignDefaultSubobject(ActionManager);
-	
+
 	TestFunc("Initialize");
 }
 
@@ -26,17 +25,6 @@ void ACharacterBase::PostInitProperties()
 	Super::PostInitProperties();
 	
 	TestFunc("PostInitProperties");
-	
-	if (HasAnyFlags(RF_ClassDefaultObject)) return;
-	
-	if (StateList)
-	{
-		for (auto Element : StateList->GetRowMap())
-		{
-			auto Row = Element.Key;
-			if (!StateNames.Contains(Row)) StateNames.Add(Row);
-		}
-	}
 }
 
 void ACharacterBase::BeginPlay()
@@ -44,23 +32,25 @@ void ACharacterBase::BeginPlay()
 	Super::BeginPlay();
 	
 	TestFunc("BeginPlay");
-	
-	if (HasAnyFlags(RF_ClassDefaultObject)) return;
-	
-	if (StateClassList.Num() != 0)
-	{
-		for (auto Element : StateClassList)
-			Element->Initialize(this);
-	}
+}
 
-	TestFunc("BeginPlay After");
+void ACharacterBase::Move(const FVector2D& MoveDirection)
+{
+	auto MyController = GetController();
+	if (!MyController) return;
+
+	auto ControlledRotate = MyController->GetControlRotation();
+
+	auto ForwardDirection = UKismetMathLibrary::GetForwardVector(ControlledRotate);
+	auto RightDirection = UKismetMathLibrary::GetRightVector(ControlledRotate);
+
+	AddMovementInput(ForwardDirection, MoveDirection.X, false);
+	AddMovementInput(RightDirection, MoveDirection.Y, false);
 }
 
 void ACharacterBase::ChangeState(const FName& NextState) const
 {
-	if (OnStateChanged.IsBound()) OnStateChanged.Broadcast(NextState);
-
-	if (StateManager) StateManager->ChangeState(NextState);
+	if (StateManagerComp) StateManagerComp->ChangeState(NextState);
 }
 
 void ACharacterBase::ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State)
@@ -69,6 +59,11 @@ void ACharacterBase::ChangeState(ACharacterBase* Target, UDataTable* EnumTable, 
 
 	Target->ChangeState(State);
 }
+
+
+
+
+
 
 bool ACharacterBase::IsCompareTableData(UDataTable* DataTable, FName RowData, FName CompareName)
 {
@@ -79,9 +74,19 @@ int32 ACharacterBase::GetStateIndex(const FName& StateName) const
 	return StateNames.Find(StateName);
 }
 
+TArray<class UUserdefinedState*> ACharacterBase::GetStateClassList() const
+{
+	return States;
+}
+
+TArray<FName> ACharacterBase::GetStateNames() const
+{
+	return StateNames; 
+}
+
 FName ACharacterBase::GetCurrentStateName() const
 {
-	if (StateManager) return StateManager->GetCurrentStateName();
+	if (StateManagerComp) return StateManagerComp->GetCurrentStateName();
 
 	return FName();
 }

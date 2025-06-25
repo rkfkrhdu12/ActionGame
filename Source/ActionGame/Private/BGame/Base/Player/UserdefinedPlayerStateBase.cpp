@@ -26,8 +26,10 @@ void UUserdefinedPlayerStateBase::Initialize(ACharacterBase* Character)
 
 bool UUserdefinedPlayerStateBase::IsValidValues() const
 {
-	if (Super::IsValidValues() && MyPlayerController) return true;
+	if (Super::IsValidValues() && MyPlayerCharacter && MyPlayerController) return true;
 
+	if (!MyPlayerCharacter)
+		UE_LOG(LogTemp, Warning, TEXT("%s : MyPlayerCharacter Invalid State"), *GetFullName());
 	if (!MyPlayerController)
 		UE_LOG(LogTemp, Warning, TEXT("%s : MyPlayerController Invalid State"), *GetFullName());
 

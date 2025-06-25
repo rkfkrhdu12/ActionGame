@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS(BlueprintType, Meta = (BlueprintSpawnableComponent), EditInlineNew, DefaultToInstanced)
+UCLASS(BlueprintType, Blueprintable, Meta = (BlueprintSpawnableComponent), EditInlineNew, DefaultToInstanced)
 class ACTIONGAME_API UUserdefinedState : public UObject
 {
 	GENERATED_BODY()

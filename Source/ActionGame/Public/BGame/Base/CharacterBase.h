@@ -2,11 +2,10 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 
-#include "StateManagerComponent.h"
+#include "CoreMinimal.h"
+#include "StateEventHandle.h"
 #include "GameFramework/Character.h"
-#include "BGame/Utility/CustomDelegates.h"
 #include "CharacterBase.generated.h"
 
 UCLASS(BlueprintType)
@@ -20,63 +19,52 @@ public:
 	virtual void BeginPlay() override;
 	
 public:
-	void ChangeState(const FName& NextState) const;
-	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf = "Target", DataTablePin="EnumTable", RowNamePin="State"), Category="State")
-	static void ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State);
-
-	UFUNCTION(BlueprintCallable, meta=(DataTablePin="DataTable", RowNamePin="RowData"), Category="State")
-	static bool IsCompareTableData(UDataTable* DataTable, FName RowData, FName CompareName);
+	UFUNCTION(BlueprintCallable)
+	void Move(const FVector2D& MoveDirection);
 	
-	/////////////////////////////// Delegate / Event
+	void ChangeState(const FName& NextState) const;
+	/////////////////////////////// Delegate / Event Handle
 public:
-	////////////////////////// State
-	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = State, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FOnStateChanged OnPreStateChanged;
-	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = State, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FOnStateChange OnEnterState;
-	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = State, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FOnStateChange OnStateChanged;
-	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = State, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FOnStateChange OnExitState;
-	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = State, meta = (AllowPrivateAccess = "true"), AdvancedDisplay)
-	FOnStateChanged OnPostStateChanged;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+	class UStateEventHandle* StateEventHandler = nullptr;
 
-	///////////////////////// Notify
-	FOnAnimNotify OnAnimNotify;
+	/////////////////////////////// Variables
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
+	UDataTable* StateNameList;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
+	TArray<class UUserdefinedState*> States;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true", EditCondition = false, EditConditionHides))
+	TArray<FName> StateNames;
 	
 	//////////////////////////////// Components
 protected:	
 	//					   State Manager	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
-	class UStateManagerComponent* StateManager = nullptr;
+	class UStateManagerComponent* StateManagerComp = nullptr;
 	
-	//					   Action Manager	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Action, meta = (AllowPrivateAccess = "true"))
-	class UActionManagerComponent* ActionManager = nullptr;
-
 	//////////////////////////////// Variables
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
-	UDataTable* StateList;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
-	TArray<class UUserdefinedState*> StateClassList;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true", EditCondition = false, EditConditionHides))
-	TArray<FName> StateNames;
 public: //		Get Function
-	class UActionManagerComponent* GetActionManager() const { return ActionManager; }
-	class UStateManagerComponent* GetStateManager() const { return StateManager; }
-
+	class UStateManagerComponent* GetStateManager() const { return StateManagerComp; }
+	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandler; }
+	
 	UFUNCTION(BlueprintCallable)
 	int32 GetStateIndex(const FName& StateName) const;
 
-	TArray<class UUserdefinedState*> GetStateClassList() const { return StateClassList; }
-	TArray<FName> GetStateNames() const { return StateNames; }
+	TArray<class UUserdefinedState*> GetStateClassList() const;
+	TArray<FName> GetStateNames() const ;
 
 	UFUNCTION(BlueprintCallable)
 	FName GetCurrentStateName() const;
 
+	/////////////////////////////////// static Func
+public:
+	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf = "Target", DataTablePin="EnumTable", RowNamePin="State"), Category="State")
+	static void ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State);
+
+	UFUNCTION(BlueprintCallable, meta=(DataTablePin="DataTable", RowNamePin="RowData"), Category="State")
+	static bool IsCompareTableData(UDataTable* DataTable, FName RowData, FName CompareName);
 	
 	//////////////////////////////// Debug
 public:
@@ -88,15 +76,13 @@ public:
 
 	void TestFunc(const FString fName) const
 	{
-		if (StateManager)
+		if (auto CheckComp = StateEventHandler)
 		{
-			//UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(),
-			//	*fName, *StateManager->GetFullName());
+			//UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *CheckComp->GetFullName());
 		}
 		else
 		{
-			//UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(),
-			//	*fName, StateManager != nullptr);
+			//UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, CheckComp != nullptr);
 		}
 	}
 

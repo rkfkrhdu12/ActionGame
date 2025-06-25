@@ -13,7 +13,7 @@ void UAnimInstanceBase::NativeBeginPlay()
 {
 	Super::NativeBeginPlay();
 
-	MyCharacter = Cast<ACharacterBase>(TryGetPawnOwner());
+	MyCharacter = Cast<ACharacterBase>(GetOwningActor());
 	if (MyCharacter)
 	{
 		MyMesh = MyCharacter->GetMesh();

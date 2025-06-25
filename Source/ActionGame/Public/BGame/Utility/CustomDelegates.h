@@ -7,7 +7,7 @@
 UDELEGATE(BlueprintCallable)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterInputVector2D, FVector2D, Value);
 UDELEGATE(BlueprintCallable)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerInput, bool, InputValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCharacterInput, bool, InputValue);
 
 // Character State Delegate
 UDELEGATE(BlueprintCallable)

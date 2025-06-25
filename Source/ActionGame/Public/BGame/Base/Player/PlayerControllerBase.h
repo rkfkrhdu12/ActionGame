@@ -26,15 +26,15 @@ public:
 	FOnCharacterInputVector2D OnInputMoveDirection;
 
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
-	FOnPlayerInput OnInputAttack;
+	FOnCharacterInput OnInputAttack;
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
-	FOnPlayerInput OnInputParry;
+	FOnCharacterInput OnInputParry;
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
-	FOnPlayerInput OnInputDash;
+	FOnCharacterInput OnInputDash;
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
-	FOnPlayerInput OnInputLookAtTarget;
+	FOnCharacterInput OnInputLookAtTarget;
 	
-protected:
+protected: 
 	virtual void OnPossess(APawn* aPawn) override;
 	virtual void SetupInputComponent() override;
 
@@ -50,10 +50,10 @@ protected:
 	TObjectPtr<class UInputManagerComponent> InputManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
-	bool IsCanMove = true;
+	bool bCanMove = true;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
-	bool IsCanMoveCamera = true;
+	bool bCanMoveCamera = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Input, meta = (AllowPrivateAccess = "true"))
 	bool bIsLookAtTarget = false;
