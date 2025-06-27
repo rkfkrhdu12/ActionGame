@@ -10,6 +10,6 @@ public class ActionGame : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(new string[] 
 			{ "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
-				"AnimGraphRuntime", "AIModule" });
+				"AnimGraphRuntime", "AIModule", "NavigationSystem" });
 	}
 }

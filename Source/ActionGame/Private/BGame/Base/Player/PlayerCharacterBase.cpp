@@ -34,8 +34,8 @@ APlayerCharacterBase::APlayerCharacterBase()
 	CameraComponent->bUsePawnControlRotation = false;
 
 	StateManagerComp = CreateDefaultSubobject<UPlayerStateManagerComponent>(TEXT("StateManager"));
-	
-	AssignDefaultSubobject(StateEventHandler);
+
+	if (!StateEventHandle) AssignDefaultSubobject(StateEventHandle);
 	
 	TestFunc("APlayerCharacterBase Initialize");
 }

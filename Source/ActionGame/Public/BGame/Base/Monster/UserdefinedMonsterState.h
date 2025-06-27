@@ -14,6 +14,9 @@ class ACTIONGAME_API UUserdefinedMonsterState : public UUserdefinedState
 {
 	GENERATED_BODY()
 public:
+	UFUNCTION(BlueprintCallable)
+	void OnMoveRandomPointInRadius(FVector OriginLocation, float Radius, FVector& DestLocation);
+public:
 	virtual void Initialize(ACharacterBase* Character) override;
 	virtual bool IsValidValues() const override;
 
@@ -21,6 +24,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ControlledObject")
 	class AMonsterCharacterBase* MyMonsterCharacter = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ControlledObject")
-	class AAIController* MyAIController = nullptr;
+	class AAIControllerBase* MyAIController = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	class UPathFollowingComponent* MyPathFollowingComponent = nullptr;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	class APlayerCharacterBase* MyPlayerCharacter = nullptr;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	FVector GetPlayerLocation() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	FVector GetActorLocation() const;
 };

@@ -3,15 +3,40 @@
 
 #include "BGame/Base/Monster/AIControllerBase.h"
 
+#include "BGame/Base/Player/PlayerCharacterBase.h"
+#include "Kismet/GameplayStatics.h"
+#include "Navigation/PathFollowingComponent.h"
+#include "Slate/SGameLayerManager.h"
+
 AAIControllerBase::AAIControllerBase()
 {
 }
 
-void AAIControllerBase::SearchPlayer(AActor* FindActor)
+void AAIControllerBase::FindPlayer()
 {
+	if (!MyPlayerCharacter) return;
+
+	if (OnFindPlayer.IsBound()) OnFindPlayer.Broadcast(true);
 }
 
 void AAIControllerBase::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+}
+
+void AAIControllerBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (!MyPlayerCharacter)
+	if (auto GameStaticPlayerCharacter = Cast<APlayerCharacterBase>(UGameplayStatics::GetPlayerCharacter(this, 0)))
+	{
+		MyPlayerCharacter = GameStaticPlayerCharacter;
+	}
+
+}
+
+EPathFollowingStatus::Type AAIControllerBase::GetCharacterStatus() const
+{
+	return GetPathFollowingComponent()->GetStatus();
 }

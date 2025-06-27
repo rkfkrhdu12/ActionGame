@@ -13,11 +13,6 @@ UCLASS()
 class ACTIONGAME_API UPlayerAnimInstanceBase : public UAnimInstanceBase
 {
 	GENERATED_BODY()
-
-public:
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void OnEnterStateEvent(const FName& StateName);
-	
 public:
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeBeginPlay() override;

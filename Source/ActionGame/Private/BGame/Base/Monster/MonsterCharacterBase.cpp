@@ -14,5 +14,7 @@ AMonsterCharacterBase::AMonsterCharacterBase()
 	
 	StateManagerComp = CreateDefaultSubobject<UMonsterStateManagerComponent>(TEXT("StateManager"));
 	
-	AssignDefaultSubobject(StateEventHandler);
+	if (!StateEventHandle) AssignDefaultSubobject(StateEventHandle);
+	
+	TestFunc("AMonsterCharacterBase Initialize");
 }

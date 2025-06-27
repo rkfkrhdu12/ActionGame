@@ -28,7 +28,8 @@ protected:
 
 public:
 	virtual void PostInitProperties() override;
-	
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
+		FActorComponentTickFunction* ThisTickFunction) override;
 protected:
 	UPROPERTY(EditAnywhere)
 	class ACharacterBase* MyCharacter = nullptr;
@@ -38,6 +39,12 @@ protected:
 
 	UPROPERTY()
 	UUserdefinedState* CurrentState = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
+	FName DefaultResetStateName = "Idle";
 public:
 	FName GetCurrentStateName() const { return CurrentEnableStateName; }
+
+	UFUNCTION(BlueprintCallable)
+	void SetTickInterval(float Interval);
 };

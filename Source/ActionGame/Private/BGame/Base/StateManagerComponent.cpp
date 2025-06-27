@@ -11,11 +11,13 @@
 UStateManagerComponent::UStateManagerComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
+	PrimaryComponentTick.TickInterval = 0.1;
 }
 
 void UStateManagerComponent::ChangeState(const FName& NextState)
 {
 	if (!MyCharacter) return;
+	
 	auto StateEventHandle = MyCharacter->GetStateEventHandle();
 	if (!StateEventHandle) return;
 
@@ -67,20 +69,13 @@ void UStateManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Display, TEXT("UStateManagerComponent::BeginPlay"));
-	
 	MyCharacter = Cast<ACharacterBase>(GetOwner());
 	if (MyCharacter)
 	{
-		UE_LOG(LogTemp, Display, TEXT("UStateManagerComponent::BeginPlay Enable Character"));
-		
 		if (auto hStateEvent = MyCharacter->GetStateEventHandle())
 			if (!hStateEvent->OnAnimNotify.IsBoundToObject(this))
 				hStateEvent->OnAnimNotify.AddUObject(this, &UStateManagerComponent::AnimNotify);
 
-		UE_LOG(LogTemp, Display, TEXT("UStateManagerComponent::BeginPlay Enable StateEvent Handler"));
-		
-		
 		if (auto StateList = MyCharacter->StateNameList)
 		{
 			for (auto Element : StateList->GetRowMap())
@@ -90,8 +85,6 @@ void UStateManagerComponent::BeginPlay()
 			}
 		}
 		
-		UE_LOG(LogTemp, Display, TEXT("UStateManagerComponent::BeginPlay Enable States　%d"), MyCharacter->StateNames.Num());
-		
 		auto List = MyCharacter->States;
 		if (List.Num() != 0)
 		{
@@ -99,7 +92,7 @@ void UStateManagerComponent::BeginPlay()
 				Element->Initialize(MyCharacter);
 		}
 
-		ChangeState("Idle");
+		ChangeState(DefaultResetStateName);
 	}
 }
 
@@ -108,4 +101,17 @@ void UStateManagerComponent::PostInitProperties()
 	Super::PostInitProperties();
 
 	
+}
+
+void UStateManagerComponent::TickComponent(float DeltaTime, ELevelTick TickType,
+	FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (CurrentState) CurrentState->Tick(DeltaTime);
+}
+
+void UStateManagerComponent::SetTickInterval(float Interval)
+{
+	PrimaryComponentTick.TickInterval = Interval;
 }

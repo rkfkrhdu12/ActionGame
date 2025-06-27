@@ -29,16 +29,21 @@ public:
 
 	// BP
 	
+	/// My Variables Null Check Complete
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void BeginPlay();
-	
+
+	/// My Variables Null Check Complete
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnEnable();
+	/// My Variables Null Check Complete
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void Tick(float DeltaTime);
+	/// My Variables Null Check Complete
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnDisable();
 	
+	/// My Variables Null Check Complete
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnAnimNotify(const UDataTable* DataTableRef,
 					FName SelectedRowName,

@@ -25,8 +25,8 @@ public:
 	void ChangeState(const FName& NextState) const;
 	/////////////////////////////// Delegate / Event Handle
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "State")
-	class UStateEventHandle* StateEventHandler = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition=false, HideEditCondition))
+	class UStateEventHandle* StateEventHandle = nullptr;
 
 	/////////////////////////////// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
@@ -47,7 +47,7 @@ protected:
 	//////////////////////////////// Variables
 public: //		Get Function
 	class UStateManagerComponent* GetStateManager() const { return StateManagerComp; }
-	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandler; }
+	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandle; }
 	
 	UFUNCTION(BlueprintCallable)
 	int32 GetStateIndex(const FName& StateName) const;
@@ -76,13 +76,14 @@ public:
 
 	void TestFunc(const FString fName) const
 	{
-		if (auto CheckComp = StateEventHandler)
+		if (false)
+		if (auto CheckComp = StateEventHandle)
 		{
-			//UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *CheckComp->GetFullName());
+			UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *CheckComp->GetFullName());
 		}
 		else
 		{
-			//UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, CheckComp != nullptr);
+			UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, CheckComp != nullptr);
 		}
 	}
 

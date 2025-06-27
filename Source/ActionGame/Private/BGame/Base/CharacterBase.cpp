@@ -17,6 +17,8 @@ ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	if (!StateEventHandle) AssignDefaultSubobject(StateEventHandle);
+	
 	TestFunc("Initialize");
 }
 

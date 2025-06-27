@@ -18,24 +18,31 @@ class ACTIONGAME_API AAIControllerBase : public AAIController
 
 protected:
 	AAIControllerBase();
-
+ 
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
 	FOnCharacterInput OnSearchPlayer;
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
 	FOnCharacterInput OnFindPlayer;
 public:
 	UFUNCTION(BlueprintCallable)
-	void SearchPlayer(AActor* FindActor);
-	
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
-	void FindPlayer(APlayerCharacterBase* Player);
+	void FindPlayer();
 
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
+	virtual void BeginPlay() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (AllowPrivateAccess = "true"))
 	bool bIsFindPlayer = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	APlayerCharacterBase* PlayerCharacter = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (AllowPrivateAccess = "true"))
+	class AMonsterCharacterBase* MyCharacter;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (AllowPrivateAccess = "true"))
+	APlayerCharacterBase* MyPlayerCharacter = nullptr;
+
+public:
+	APlayerCharacterBase* GetPlayerCharacter() const { return MyPlayerCharacter; }
+
+	UFUNCTION(BlueprintCallable)
+	EPathFollowingStatus::Type GetCharacterStatus() const;
 };

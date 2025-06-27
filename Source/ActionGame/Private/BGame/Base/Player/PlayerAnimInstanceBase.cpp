@@ -19,9 +19,5 @@ void UPlayerAnimInstanceBase::NativeBeginPlay()
 	if (MyPlayerCharacter)
 	{
 		MyPlayerController = Cast<APlayerControllerBase>(MyPlayerCharacter->GetController());
-
-		if (auto hStateEvent = MyPlayerCharacter->GetStateEventHandle())
-			if (!hStateEvent->OnEnterState.IsAlreadyBound(this, &UPlayerAnimInstanceBase::OnEnterStateEvent))
-				MyPlayerCharacter->GetStateEventHandle()->OnEnterState.AddDynamic(this, &UPlayerAnimInstanceBase::OnEnterStateEvent);
 	}
 }  
