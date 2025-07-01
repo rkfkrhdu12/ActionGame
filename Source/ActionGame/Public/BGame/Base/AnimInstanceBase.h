@@ -40,6 +40,8 @@ protected:
 	float MoveSpeed = 0.f;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
 	FVector MoveVelocity = FVector::ZeroVector;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
+	FVector MoveDirection = FVector::ZeroVector;
 
 public:
 	UFUNCTION(BlueprintCallable, meta=(DataTablePin="DataTable", RowNamePin="RowData"), Category="State")

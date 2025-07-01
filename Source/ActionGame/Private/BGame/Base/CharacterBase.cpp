@@ -17,8 +17,8 @@ ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	if (!StateEventHandle) AssignDefaultSubobject(StateEventHandle);
-	
+	if (!StateEventHandler) AssignDefaultSubobject(StateEventHandler);
+
 	TestFunc("Initialize");
 }
 
@@ -55,6 +55,25 @@ void ACharacterBase::ChangeState(const FName& NextState) const
 	if (StateManagerComp) StateManagerComp->ChangeState(NextState);
 }
 
+void ACharacterBase::LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult)
+{
+
+	if (auto World = GetWorld())
+	{
+		FCollisionQueryParams Params;
+		Params.AddIgnoredActor(this);
+		
+		bool bHit = World->LineTraceSingleByChannel(
+			OutHitResult,
+			StartLocation,
+			EndLocation,
+			ECC_Visibility,
+			Params);
+
+		if (bIsDrawDebugLine) DrawDebugLine(World, StartLocation, EndLocation, bHit ? FColor::Red : FColor::Green, false, 0.1f);
+	}
+}
+
 void ACharacterBase::ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State)
 {
 	if (!EnumTable || !Target) return;
@@ -78,7 +97,8 @@ int32 ACharacterBase::GetStateIndex(const FName& StateName) const
 
 TArray<class UUserdefinedState*> ACharacterBase::GetStateClassList() const
 {
-	return States;
+	UE_LOG(LogTemp, Display, TEXT("%s::GetStateClassList %d"), *GetName(), StateList.Num());
+	return StateList;
 }
 
 TArray<FName> ACharacterBase::GetStateNames() const

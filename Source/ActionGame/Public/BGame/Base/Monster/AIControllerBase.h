@@ -15,14 +15,16 @@ UCLASS()
 class ACTIONGAME_API AAIControllerBase : public AAIController
 {
 	GENERATED_BODY()
-
-protected:
+public:
 	AAIControllerBase();
  
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
 	FOnCharacterInput OnSearchPlayer;
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
 	FOnCharacterInput OnFindPlayer;
+
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintCallable, Category = Input)
+	FOnCharacterInput OnMoveFinished;
 public:
 	UFUNCTION(BlueprintCallable)
 	void FindPlayer();
@@ -31,6 +33,10 @@ protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void BeginPlay() override;
 
+public:
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+	
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default", meta = (AllowPrivateAccess = "true"))
 	bool bIsFindPlayer = false;
 

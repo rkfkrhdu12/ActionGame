@@ -41,7 +41,7 @@ void UStateManagerComponent::ChangeState(const FName& NextState)
 			{
 				StateEventHandle->BroadcastExitState(CurrentEnableStateName);
 				
-				CurrentState->Disable();
+				if (CurrentState) CurrentState->Disable();
 			}
 		}
 	}
@@ -52,7 +52,7 @@ void UStateManagerComponent::ChangeState(const FName& NextState)
 		CurrentEnableStateName = NextState;
 		StateEventHandle->BroadcastEnterState(CurrentEnableStateName);
 
-		CurrentState->Enable();
+		if (CurrentState) CurrentState->Enable();
 	}
 
 	StateEventHandle->BroadcastPostStateChanged(CurrentEnableStateName, NextState);
@@ -85,11 +85,13 @@ void UStateManagerComponent::BeginPlay()
 			}
 		}
 		
-		auto List = MyCharacter->States;
+		auto List = MyCharacter->StateList;
 		if (List.Num() != 0)
 		{
 			for (auto Element : List)
-				Element->Initialize(MyCharacter);
+			{
+				if (Element) { Element->Initialize(MyCharacter); }
+			}
 		}
 
 		ChangeState(DefaultResetStateName);

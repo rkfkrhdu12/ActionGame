@@ -53,6 +53,12 @@ public:
 	bool CanChanged(const FName& NextState);
 	bool CanChanged_Implementation(const FName& NextState);
 
+	UFUNCTION(BlueprintCallable)
+	void StartDelay(float DelayTime, FTimerHandle& TimerHandle);
+	void DelayFinished();
+	
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OnDelayFinished();
 protected:
 	UPROPERTY()
 	bool bIsInitialized = false;
@@ -67,9 +73,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Default, AdvancedDisplay)
 	TObjectPtr<class USkeletalMeshComponent> MyMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FTimerHandle> DelayTimers;
+	
 public:
 	bool IsInitialized() const { return bIsInitialized; }
 
 	UFUNCTION(BlueprintCallable)
 	virtual bool IsValidValues() const;
+
+	UFUNCTION(BlueprintCallable)
+	float GetRemainTimerTime(FTimerHandle TimerHandle);
+
+	UFUNCTION(BlueprintCallable)
+	bool IsValidTimer(FTimerHandle TimerHandle);
+	
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	FVector GetActorLocation() const;
 };

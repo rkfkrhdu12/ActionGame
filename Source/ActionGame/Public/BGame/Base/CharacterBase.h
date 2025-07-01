@@ -23,17 +23,23 @@ public:
 	void Move(const FVector2D& MoveDirection);
 	
 	void ChangeState(const FName& NextState) const;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bIsDrawDebugLine = true;
+	UFUNCTION(BlueprintCallable)
+	void LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult);
 	/////////////////////////////// Delegate / Event Handle
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition=false, HideEditCondition))
-	class UStateEventHandle* StateEventHandle = nullptr;
+	class UStateEventHandle* StateEventHandler = nullptr;
 
 	/////////////////////////////// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
 	UDataTable* StateNameList;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
-	TArray<class UUserdefinedState*> States;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Instanced, Category = State, meta = (AllowPrivateAccess = "true"))
+	TArray<class UUserdefinedState*> StateList;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true", EditCondition = false, EditConditionHides))
 	TArray<FName> StateNames;
@@ -47,7 +53,7 @@ protected:
 	//////////////////////////////// Variables
 public: //		Get Function
 	class UStateManagerComponent* GetStateManager() const { return StateManagerComp; }
-	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandle; }
+	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandler; }
 	
 	UFUNCTION(BlueprintCallable)
 	int32 GetStateIndex(const FName& StateName) const;
@@ -77,7 +83,7 @@ public:
 	void TestFunc(const FString fName) const
 	{
 		if (false)
-		if (auto CheckComp = StateEventHandle)
+		if (auto CheckComp = StateEventHandler)
 		{
 			UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *CheckComp->GetFullName());
 		}

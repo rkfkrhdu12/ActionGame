@@ -42,7 +42,14 @@ void UAnimInstanceBase::NativeUpdateAnimation(float DeltaSeconds)
 	if (!MyCharacter) return;
 
 	MoveVelocity = MyCharacter->GetVelocity();
+	MoveVelocity.Normalize();
 	MoveSpeed = MyCharacter->GetVelocity().Length();
+
+	float ForwardDot = MyCharacter->GetActorForwardVector().Dot(MoveVelocity);
+	float RightDot = MyCharacter->GetActorRightVector().Dot(MoveVelocity);
+
+	MoveDirection = FVector(ForwardDot, RightDot,0.f);
+	MoveDirection.Normalize();
 }
 
 bool UAnimInstanceBase::IsEqualCurState(UDataTable* DataTable, FName RowData)

@@ -33,10 +33,18 @@ void AAIControllerBase::BeginPlay()
 	{
 		MyPlayerCharacter = GameStaticPlayerCharacter;
 	}
+}
 
+void AAIControllerBase::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result)
+{
+	Super::OnMoveCompleted(RequestID, Result);
+	
+	if (OnMoveFinished.IsBound()) OnMoveFinished.Broadcast(true);
 }
 
 EPathFollowingStatus::Type AAIControllerBase::GetCharacterStatus() const
 {
+	if (!GetPathFollowingComponent()) return EPathFollowingStatus::Type::Paused;
+	
 	return GetPathFollowingComponent()->GetStatus();
 }
