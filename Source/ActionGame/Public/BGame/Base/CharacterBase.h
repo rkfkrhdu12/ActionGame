@@ -32,7 +32,7 @@ public:
 	/////////////////////////////// Delegate / Event Handle
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition=false, HideEditCondition))
-	class UStateEventHandle* StateEventHandler = nullptr;
+	class UStateEventHandle* StateEventHandle = nullptr;
 
 	/////////////////////////////// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
@@ -53,7 +53,7 @@ protected:
 	//////////////////////////////// Variables
 public: //		Get Function
 	class UStateManagerComponent* GetStateManager() const { return StateManagerComp; }
-	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandler; }
+	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandle; }
 	
 	UFUNCTION(BlueprintCallable)
 	int32 GetStateIndex(const FName& StateName) const;
@@ -74,22 +74,16 @@ public:
 	
 	//////////////////////////////// Debug
 public:
-	// virtual void Tick(float DeltaSeconds) override;
-	// virtual void PostInitProperties() override;
-	// virtual void PostLoad() override;
-	// virtual void PostActorCreated() override;
-	// virtual void OnConstruction(const FTransform& Transform) override;
-
-	void TestFunc(const FString fName) const
+	void PrintErrorCheckLog(const FString fName) const
 	{
 		if (false)
-		if (auto CheckComp = StateEventHandler)
+		if (auto CheckObject = StateEventHandle)
 		{
-			UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *CheckComp->GetFullName());
+			UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *CheckObject->GetFullName());
 		}
 		else
 		{
-			UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, CheckComp != nullptr);
+			UE_LOG(LogTemp, Display, TEXT("%s %s %d"), *GetName(), *fName, CheckObject != nullptr);
 		}
 	}
 

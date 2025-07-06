@@ -35,9 +35,9 @@ APlayerCharacterBase::APlayerCharacterBase()
 
 	StateManagerComp = CreateDefaultSubobject<UPlayerStateManagerComponent>(TEXT("StateManager"));
 
-	if (!StateEventHandler) AssignDefaultSubobject(StateEventHandler);
+	if (!StateEventHandle) AssignDefaultSubobject(StateEventHandle);
 	
-	TestFunc("APlayerCharacterBase Initialize");
+	PrintErrorCheckLog("APlayerCharacterBase Initialize");
 }
 
 void APlayerCharacterBase::OnLookAtMode()

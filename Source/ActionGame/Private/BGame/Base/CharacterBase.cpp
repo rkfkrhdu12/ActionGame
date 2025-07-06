@@ -17,23 +17,23 @@ ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	if (!StateEventHandler) AssignDefaultSubobject(StateEventHandler);
+	if (!StateEventHandle) AssignDefaultSubobject(StateEventHandle);
 
-	TestFunc("Initialize");
+	PrintErrorCheckLog("Initialize");
 }
 
 void ACharacterBase::PostInitProperties()
 {
 	Super::PostInitProperties();
 	
-	TestFunc("PostInitProperties");
+	PrintErrorCheckLog("PostInitProperties");
 }
 
 void ACharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	TestFunc("BeginPlay");
+	PrintErrorCheckLog("BeginPlay");
 }
 
 void ACharacterBase::Move(const FVector2D& MoveDirection)
@@ -57,7 +57,6 @@ void ACharacterBase::ChangeState(const FName& NextState) const
 
 void ACharacterBase::LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult)
 {
-
 	if (auto World = GetWorld())
 	{
 		FCollisionQueryParams Params;
@@ -97,7 +96,6 @@ int32 ACharacterBase::GetStateIndex(const FName& StateName) const
 
 TArray<class UUserdefinedState*> ACharacterBase::GetStateClassList() const
 {
-	UE_LOG(LogTemp, Display, TEXT("%s::GetStateClassList %d"), *GetName(), StateList.Num());
 	return StateList;
 }
 

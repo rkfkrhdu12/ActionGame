@@ -43,7 +43,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	class APlayerCharacterBase* MyPlayerCharacter = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	float DefaultWalkSpeed = 250.f;
+
 public:
+	[[nodiscard]] float GetDefaultWalkSpeed() const { return DefaultWalkSpeed; }
+
 	UFUNCTION(BlueprintCallable, Category = "Default")
-	FVector GetPlayerLocation() const;
+	[[nodiscard]] FVector GetPlayerLocation() const;
+
+	UFUNCTION(BlueprintCallable, Category = "Default")
+	[[nodiscard]] float GetDistanceToPlayer() const;
 };

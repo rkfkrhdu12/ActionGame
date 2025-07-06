@@ -37,8 +37,7 @@ void UUserdefinedState::Enable()
 
 void UUserdefinedState::Disable()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s : End"), *GetName());
-
+	// UE_LOG(LogTemp, Warning, TEXT("%s : End"), *GetName());
 	if (IsValidValues()) OnDisable();
 
 	bIsEnabled = false;
@@ -62,7 +61,7 @@ bool UUserdefinedState::CanChanged_Implementation(const FName& NextState)
 	return true;
 }
 
-void UUserdefinedState::StartDelay(float DelayTime, FTimerHandle& TimerHandle)
+void UUserdefinedState::StartDelay(float DelayTime, FTimerHandle& TimerHandle, bool bIsLoop)
 {
 	if (!IsValidValues()) return;
 
@@ -73,14 +72,12 @@ void UUserdefinedState::StartDelay(float DelayTime, FTimerHandle& TimerHandle)
 			this,
 			&UUserdefinedState::DelayFinished,
 			DelayTime,
-			false);
+			bIsLoop);
 
 		if (TimerHandle.IsValid())
 		{
-			if (DelayTimers.Find(TimerHandle) == INDEX_NONE)
-			{
-				DelayTimers.Add(TimerHandle);
-			}
+			if (!bIsLoop)	{ if (DelayTimers.Find(TimerHandle) == INDEX_NONE) DelayTimers.Add(TimerHandle); }
+			else			{ if (DelayLoopTimers.Find(TimerHandle) == INDEX_NONE) DelayLoopTimers.Add(TimerHandle); }
 		}
 	}
 }
@@ -88,6 +85,16 @@ void UUserdefinedState::StartDelay(float DelayTime, FTimerHandle& TimerHandle)
 void UUserdefinedState::DelayFinished()
 {
 	OnDelayFinished();
+}
+
+void UUserdefinedState::ClearTimer(FTimerHandle TimerHandle)
+{
+	if (!TimerHandle.IsValid()) return;
+
+	if (DelayTimers.Find(TimerHandle) != INDEX_NONE) DelayTimers.Remove(TimerHandle);
+	if (DelayLoopTimers.Find(TimerHandle) != INDEX_NONE) DelayLoopTimers.Remove(TimerHandle);
+
+	if (GetWorld()) GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 }
 
 bool UUserdefinedState::IsValidValues() const
@@ -121,16 +128,29 @@ bool UUserdefinedState::IsValidTimer(FTimerHandle TimerHandle)
 {
 	if (!IsValidValues()) return false;
 
+	UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : Start"));
+	
 	bool returnValue = false;
-	if (DelayTimers.Find(TimerHandle) != INDEX_NONE)
+	if (GetRemainTimerTime(TimerHandle) <= 0.f && GetRemainTimerTime(TimerHandle) > -0.1f
+		&& GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
 	{
-		if (GetRemainTimerTime(TimerHandle) <= 0.f && GetRemainTimerTime(TimerHandle) > -0.1f &&
-			GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
+		UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : Compare"));
+		if (DelayTimers.Find(TimerHandle) != INDEX_NONE)
 		{
+		UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : is DelayTimers"));
 			returnValue = true;
 			DelayTimers.Remove(TimerHandle);
 		}
+
+		if (DelayLoopTimers.Find(TimerHandle) != INDEX_NONE)
+		{
+		UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : is DelayLoopTimers"));
+			returnValue = true;
+		}
 	}
+	
+	UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : %d"), returnValue);
+	
 	return returnValue;
 }
 

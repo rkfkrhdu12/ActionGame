@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BGame/Utility/MyValidTaskOutput.h"
 #include "UObject/NoExportTypes.h"
 #include "UserdefinedState.generated.h"
 
@@ -53,9 +54,11 @@ public:
 	bool CanChanged(const FName& NextState);
 	bool CanChanged_Implementation(const FName& NextState);
 
-	UFUNCTION(BlueprintCallable)
-	void StartDelay(float DelayTime, FTimerHandle& TimerHandle);
+	UFUNCTION(BlueprintCallable, meta = (AdvancedDisplay = "bIsLoop"))
+	void StartDelay(float DelayTime, FTimerHandle& TimerHandle, bool bIsLoop = false);
 	void DelayFinished();
+	UFUNCTION(BlueprintCallable)
+	void ClearTimer(FTimerHandle TimerHandle);
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnDelayFinished();
@@ -75,6 +78,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FTimerHandle> DelayTimers;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FTimerHandle> DelayLoopTimers;
 	
 public:
 	bool IsInitialized() const { return bIsInitialized; }

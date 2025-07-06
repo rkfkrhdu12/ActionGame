@@ -7,6 +7,7 @@
 #include "BGame/Base/Monster/AIControllerBase.h"
 #include "BGame/Base/Monster/MonsterCharacterBase.h"
 #include "BGame/Base/Player/PlayerCharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 
 void UUserdefinedMonsterState::OnMoveRandomPointInRadius(FVector OriginLocation, float Radius, FVector& DestLocation)
@@ -64,11 +65,12 @@ void UUserdefinedMonsterState::Initialize(ACharacterBase* Character)
 			if (MyAIController)
 			{
 				MyPlayerCharacter = MyAIController->GetPlayerCharacter();
-				// MyPathFollowingComponent = MyAIController->GetPathFollowingComponent();
 				if (!MyAIController->OnMoveFinished.IsAlreadyBound(this, &UUserdefinedMonsterState::OnMoveFinished))
 					MyAIController->OnMoveFinished.AddDynamic(this, &UUserdefinedMonsterState::OnMoveFinished);
 			}
 		}
+
+		DefaultWalkSpeed = MyMonsterCharacter->GetCharacterMovement()->MaxWalkSpeed;
 	}
 
 	Super::Initialize(Character);
@@ -100,7 +102,15 @@ void UUserdefinedMonsterState::MoveFinished(bool bIsSuccessful)
 
 FVector UUserdefinedMonsterState::GetPlayerLocation() const
 {
-	if (!IsValidValues()) return FVector::OneVector;
+	if (!IsValidValues()) return FVector::ZeroVector;
 
 	return MyPlayerCharacter->GetActorLocation();
+}
+
+float UUserdefinedMonsterState::GetDistanceToPlayer() const
+{
+	if (!IsValidValues()) return -1.f;
+
+	return FVector::Distance(MyCharacter->GetActorLocation(), GetPlayerLocation());
+	
 }
