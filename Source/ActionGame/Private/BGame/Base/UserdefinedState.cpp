@@ -128,28 +128,21 @@ bool UUserdefinedState::IsValidTimer(FTimerHandle TimerHandle)
 {
 	if (!IsValidValues()) return false;
 
-	UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : Start"));
-	
 	bool returnValue = false;
 	if (GetRemainTimerTime(TimerHandle) <= 0.f && GetRemainTimerTime(TimerHandle) > -0.1f
 		&& GetWorld()->GetTimerManager().IsTimerActive(TimerHandle))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : Compare"));
 		if (DelayTimers.Find(TimerHandle) != INDEX_NONE)
 		{
-		UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : is DelayTimers"));
 			returnValue = true;
 			DelayTimers.Remove(TimerHandle);
 		}
 
 		if (DelayLoopTimers.Find(TimerHandle) != INDEX_NONE)
 		{
-		UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : is DelayLoopTimers"));
 			returnValue = true;
 		}
 	}
-	
-	UE_LOG(LogTemp, Warning, TEXT("IsValidTimer : %d"), returnValue);
 	
 	return returnValue;
 }
