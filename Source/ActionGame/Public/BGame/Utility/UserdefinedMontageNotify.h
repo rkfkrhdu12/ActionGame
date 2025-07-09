@@ -13,8 +13,4 @@ UCLASS()
 class ACTIONGAME_API UUserdefinedMontageNotify : public UAnimNotify_PlayMontageNotify
 {
 	GENERATED_BODY()
-public:
-	virtual FString GetNotifyName_Implementation() const override;
-	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-		const FAnimNotifyEventReference& EventReference) override;
 };

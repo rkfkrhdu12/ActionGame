@@ -23,3 +23,10 @@ void UUNotify_DataTableEvent::Notify(USkeletalMeshComponent* MeshComp, UAnimSequ
 		}
 	}
 }
+
+FString UUNotify_DataTableEvent::GetNotifyName_Implementation() const
+{
+	if (NotifyTableHandle.IsNull()) return Super::GetNotifyName_Implementation();
+
+	return NotifyTableHandle.RowName.ToString();
+}

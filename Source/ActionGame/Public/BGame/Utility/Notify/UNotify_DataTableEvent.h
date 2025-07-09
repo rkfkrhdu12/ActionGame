@@ -13,10 +13,13 @@ UCLASS()
 class ACTIONGAME_API UUNotify_DataTableEvent : public UUserdefinedMontageNotify
 {
 	GENERATED_BODY()
-public:
+public:	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Config")
 	FDataTableRowHandle NotifyTableHandle;
 	
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
 		const FAnimNotifyEventReference& EventReference) override;
+	
+	virtual FString GetNotifyName_Implementation() const override;
+
 };
