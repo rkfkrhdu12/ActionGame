@@ -24,6 +24,8 @@ public:
 	
 	void ChangeState(const FName& NextState) const;
 
+	UFUNCTION(BlueprintCallable)
+	void OnKnockback(const FVector& TargetLocation, float Power);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsDrawDebugLine = true;
@@ -49,6 +51,9 @@ protected:
 	//					   State Manager	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = State, meta = (AllowPrivateAccess = "true"))
 	class UStateManagerComponent* StateManagerComp = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Knockback, meta = (AllowPrivateAccess = "true"))
+	class UKnockbackComponent* KnockbackComp = nullptr;
 	
 	//////////////////////////////// Variables
 public: //		Get Function

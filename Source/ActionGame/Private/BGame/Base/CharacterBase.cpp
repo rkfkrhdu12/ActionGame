@@ -4,6 +4,7 @@
 #include "BGame/Base/CharacterBase.h"
 
 #include "BGame/Base/ActionManagerComponent.h"
+#include "BGame/Base/KnockbackComponent.h"
 #include "BGame/Base/StateEventHandle.h"
 #include "BGame/Base/StateManagerComponent.h"
 #include "BGame/Base/UserdefinedState.h"
@@ -18,7 +19,8 @@ ACharacterBase::ACharacterBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	AssignDefaultSubobject(StateEventHandle);
-
+	AssignDefaultSubobject(KnockbackComp);
+	
 	PrintErrorCheckLog("Initialize");
 }
 
@@ -53,6 +55,11 @@ void ACharacterBase::Move(const FVector2D& MoveDirection)
 void ACharacterBase::ChangeState(const FName& NextState) const
 {
 	if (StateManagerComp) StateManagerComp->ChangeState(NextState);
+}
+
+void ACharacterBase::OnKnockback(const FVector& TargetLocation, float Power)
+{
+	if (KnockbackComp) KnockbackComp->OnStart(TargetLocation, Power);
 }
 
 void ACharacterBase::LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult)
