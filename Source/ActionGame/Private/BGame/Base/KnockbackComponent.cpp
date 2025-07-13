@@ -35,6 +35,8 @@ void UKnockbackComponent::OnStart(const FVector& ReceiveLocation, float Power)
 {
 	if (!MyCharacter || !MyCharacterMovement) return;
 
+	TargetLocation = ReceiveLocation;
+	
 	MyCharacterMovement->StopMovementImmediately();
 
 	MyCharacterMovement->GroundFriction = 0.0f;
@@ -44,17 +46,22 @@ void UKnockbackComponent::OnStart(const FVector& ReceiveLocation, float Power)
 	FVector ActorLocation = MyCharacter->GetActorLocation();
 	ActorLocation.Z = 0;
 	TargetLocation.Z = 0;
-
+	
+	auto lookAtRotate = UKismetMathLibrary::FindLookAtRotation(ActorLocation, TargetLocation);
+	MyCharacter->SetActorRotation(lookAtRotate);
+	
 	FVector knockbackDirection = MyCharacter->GetActorForwardVector() * -1.0f;
-
-	if (!TargetLocation.IsNearlyZero())
-		knockbackDirection = ActorLocation - TargetLocation;
 	knockbackDirection.Normalize();
 
+	DrawDebugLine(GetWorld(), MyCharacter->GetActorLocation(), ReceiveLocation, true ? FColor::Red : FColor::Green,
+		false, 1.f);
+	
 	MyCharacterMovement->AddImpulse(knockbackDirection * Power, true);
 
 	KnockbackTime = 0.0f;
 	bIsEnable = true;
+
+	UE_LOG(LogTemp, Log, TEXT("%s Knockback Start "), *MyCharacter->GetName());
 }
 
 void UKnockbackComponent::OnEnd()
@@ -70,6 +77,7 @@ void UKnockbackComponent::OnEnd()
 	if (MyController != nullptr)
 		MyController->SetIgnoreMoveInput(false);
 
+	UE_LOG(LogTemp, Log, TEXT("%s Knockback End "), *MyCharacter->GetName());
 	bIsEnable = false;
 }
 
@@ -83,18 +91,20 @@ void UKnockbackComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 	if (MyCharacter == nullptr || MyCharacterMovement == nullptr) return;
 
 	KnockbackTime += DeltaTime;
-
-	if (!TargetLocation.IsNearlyZero())
-	{
-		FRotator characterRotate = MyCharacter->GetActorRotation();
-		FRotator lookAtRotate = UKismetMathLibrary::FindLookAtRotation(MyCharacter->GetActorLocation(), TargetLocation);
-		FRotator resultRotate = UKismetMathLibrary::RInterpTo(characterRotate, lookAtRotate, DeltaTime, 10.f);
 	
-		resultRotate.Pitch = characterRotate.Pitch;
-		resultRotate.Roll = characterRotate.Roll;
-	
-		MyCharacter->SetActorRotation(resultRotate);
-	}
+	// if (!TargetLocation.IsNearlyZero())
+	// {
+	// 	FRotator characterRotate = MyCharacter->GetActorRotation();
+	// 	FRotator lookAtRotate = UKismetMathLibrary::FindLookAtRotation(MyCharacter->GetActorLocation(), TargetLocation);
+	// 	FRotator resultRotate = UKismetMathLibrary::RInterpTo(characterRotate, lookAtRotate, DeltaTime, 10.f);
+	//
+	// 	resultRotate.Pitch = characterRotate.Pitch;
+	// 	resultRotate.Roll = characterRotate.Roll;
+	//
+	// 	MyCharacter->SetActorRotation(resultRotate);
+	// 	
+	// 	UE_LOG(LogTemp, Log, TEXT("%s Knockback Ing "), *MyCharacter->GetName());
+	// }
 
 	if (KnockbackTime >= .15f && MyCharacterMovement->Velocity.Size() <= 35.f)
 		OnEnd();

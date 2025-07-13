@@ -18,7 +18,7 @@ ACharacterBase::ACharacterBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	AssignDefaultSubobject(StateEventHandle);
+	AssignDefaultSubobject(StateEventHandler);
 	AssignDefaultSubobject(KnockbackComp);
 	
 	PrintErrorCheckLog("Initialize");
@@ -62,7 +62,7 @@ void ACharacterBase::OnKnockback(const FVector& TargetLocation, float Power)
 	if (KnockbackComp) KnockbackComp->OnStart(TargetLocation, Power);
 }
 
-void ACharacterBase::LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult)
+void ACharacterBase::LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult, ECollisionChannel TraceChannel)
 {
 	if (auto World = GetWorld())
 	{
@@ -73,7 +73,7 @@ void ACharacterBase::LineTrace(FVector StartLocation, FVector EndLocation, FHitR
 			OutHitResult,
 			StartLocation,
 			EndLocation,
-			ECC_Visibility,
+			TraceChannel,
 			Params);
 
 		if (bIsDrawDebugLine) DrawDebugLine(World, StartLocation, EndLocation, bHit ? FColor::Red : FColor::Green, false, 0.1f);

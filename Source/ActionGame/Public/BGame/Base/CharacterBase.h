@@ -30,11 +30,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsDrawDebugLine = true;
 	UFUNCTION(BlueprintCallable)
-	void LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult);
+	void LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult, ECollisionChannel TraceChannel);
 	/////////////////////////////// Delegate / Event Handle
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition=false, HideEditCondition))
-	class UStateEventHandle* StateEventHandle = nullptr;
+	class UStateEventHandle* StateEventHandler = nullptr;
 
 	/////////////////////////////// Variables
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = State, meta = (AllowPrivateAccess = "true"))
@@ -58,7 +58,7 @@ protected:
 	//////////////////////////////// Variables
 public: //		Get Function
 	class UStateManagerComponent* GetStateManager() const { return StateManagerComp; }
-	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandle; }
+	class UStateEventHandle* GetStateEventHandle() const { return StateEventHandler; }
 	
 	UFUNCTION(BlueprintCallable)
 	int32 GetStateIndex(const FName& StateName) const;
@@ -82,7 +82,7 @@ public:
 	void PrintErrorCheckLog(const FString fName) const
 	{
 		if (false)
-		if (auto CheckObject = StateEventHandle)
+		if (auto CheckObject = StateEventHandler)
 		{
 			UE_LOG(LogTemp, Display, TEXT("%s %s %s"), *GetName(), *fName, *CheckObject->GetFullName());
 		}

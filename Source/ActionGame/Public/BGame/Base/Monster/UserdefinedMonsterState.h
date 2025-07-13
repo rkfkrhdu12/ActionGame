@@ -19,6 +19,7 @@ public:
 
 	void MoveFinished(bool bIsSuccessful);
 
+	void LookAtPlayerCharacter();
 public:
 	UFUNCTION(BlueprintCallable)
 	void OnMoveRandomPointInRadius(FVector OriginLocation, float Radius, FVector& DestLocation);
@@ -29,23 +30,21 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnMoveFinished(bool bIsSuccess);
 
-	UFUNCTION(BlueprintCallable)
-	void LineTrace(FVector EndLocation, FHitResult& HitResult);
+	virtual void Update(float DeltaTime) override;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ControlledObject")
 	class AMonsterCharacterBase* MyMonsterCharacter = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ControlledObject")
 	class AAIControllerBase* MyAIController = nullptr;
 
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-	// class UPathFollowingComponent* MyPathFollowingComponent = nullptr;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	class APlayerCharacterBase* MyPlayerCharacter = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
 	float DefaultWalkSpeed = 250.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Default")
+	bool bIsLookAtPlayer = true;
 public:
 	[[nodiscard]] float GetDefaultWalkSpeed() const { return DefaultWalkSpeed; }
 
@@ -54,4 +53,5 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Default")
 	[[nodiscard]] float GetDistanceToPlayer() const;
+	
 };

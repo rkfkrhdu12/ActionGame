@@ -8,6 +8,7 @@
 #include "BGame/Base/Monster/MonsterCharacterBase.h"
 #include "BGame/Base/Player/PlayerCharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Runtime/AIModule/Classes/AIController.h"
 
 void UUserdefinedMonsterState::OnMoveRandomPointInRadius(FVector OriginLocation, float Radius, FVector& DestLocation)
@@ -32,22 +33,11 @@ void UUserdefinedMonsterState::OnMoveToLocation(FVector Destination)
 	MyAIController->MoveToLocation(Destination);
 }
 
-void UUserdefinedMonsterState::LineTrace(FVector EndLocation, FHitResult& HitResult)
+void UUserdefinedMonsterState::Update(float DeltaTime)
 {
-	if (!IsValidValues()) return;
+	Super::Update(DeltaTime);
 
-	if (auto World = MyCharacter->GetWorld())
-	{
-		FCollisionQueryParams Params;
-		Params.AddIgnoredActor(MyCharacter);
-
-		World->LineTraceSingleByChannel(
-			HitResult,
-			GetActorLocation(),
-			EndLocation,
-			ECC_Visibility,
-			Params);
-	}
+	if (bIsLookAtPlayer) LookAtPlayerCharacter();
 }
 
 void UUserdefinedMonsterState::Initialize(ACharacterBase* Character)
@@ -88,8 +78,6 @@ bool UUserdefinedMonsterState::IsValidValues() const
 		UE_LOG(LogTemp, Warning, TEXT("%s : MyAIController Invalid State"), *GetFullName());
 	if (!MyPlayerCharacter)
 		UE_LOG(LogTemp, Warning, TEXT("%s : MyPlayerCharacter Invalid State"), *GetFullName());
-	//if (!MyPathFollowingComponent)
-	//	UE_LOG(LogTemp, Warning, TEXT("%s : MyPathFollowingComponent Invalid State"), *GetFullName());
 
 	return false;
 }
@@ -97,6 +85,18 @@ bool UUserdefinedMonsterState::IsValidValues() const
 void UUserdefinedMonsterState::MoveFinished(bool bIsSuccessful)
 {
 	if (IsValidValues()) OnMoveFinished(bIsSuccessful);
+}
+
+void UUserdefinedMonsterState::LookAtPlayerCharacter()
+{
+	if (!IsValidValues()) return;
+
+	auto LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), GetPlayerLocation());
+	auto LerpRotation = UKismetMathLibrary::RLerp(MyCharacter->GetActorRotation(), LookAtRotation, .3f, true);
+	if (abs(MyCharacter->GetActorRotation().Yaw - LookAtRotation.Yaw) > 0.1f)
+	{
+		MyCharacter->SetActorRotation(LerpRotation);
+	}
 }
 
 
