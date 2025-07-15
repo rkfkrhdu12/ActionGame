@@ -9,6 +9,7 @@
 #include "BGame/Base/StateManagerComponent.h"
 #include "BGame/Base/UserdefinedState.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 #define AssignDefaultSubobject(Variable)\
 	Variable = CreateDefaultSubobject<std::remove_reference_t<decltype(*Variable)>>(#Variable)
@@ -75,8 +76,28 @@ void ACharacterBase::LineTrace(FVector StartLocation, FVector EndLocation, FHitR
 			EndLocation,
 			TraceChannel,
 			Params);
+	}
+}
 
-		if (bIsDrawDebugLine) DrawDebugLine(World, StartLocation, EndLocation, bHit ? FColor::Red : FColor::Green, false, 0.1f);
+void ACharacterBase::SphereTrace(float Radius, FVector StartLocation, FVector EndLocation,
+	TArray<FHitResult>& OutHitResults, ETraceTypeQuery TraceChannel, bool bIsDrawDebug)
+{
+	if (auto World = GetWorld())
+	{
+		TArray<AActor*> ActorsToIgnore;
+		ActorsToIgnore.Add(this);
+
+		bool bHit = UKismetSystemLibrary::SphereTraceMulti(World, StartLocation, EndLocation,
+			Radius,
+			TraceChannel,
+			false,
+			ActorsToIgnore,
+			bIsDrawDebug ? EDrawDebugTrace::ForDuration : EDrawDebugTrace::None,
+			OutHitResults,
+			true,
+			FLinearColor::Red, FLinearColor::Green,
+			1.f);
+		
 	}
 }
 

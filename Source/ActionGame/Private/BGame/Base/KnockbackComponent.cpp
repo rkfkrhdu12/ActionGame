@@ -50,7 +50,7 @@ void UKnockbackComponent::OnStart(const FVector& ReceiveLocation, float Power)
 	auto lookAtRotate = UKismetMathLibrary::FindLookAtRotation(ActorLocation, TargetLocation);
 	MyCharacter->SetActorRotation(lookAtRotate);
 	
-	FVector knockbackDirection = MyCharacter->GetActorForwardVector() * -1.0f;
+	FVector knockbackDirection = lookAtRotate.Vector() * -1.0f;
 	knockbackDirection.Normalize();
 
 	DrawDebugLine(GetWorld(), MyCharacter->GetActorLocation(), ReceiveLocation, true ? FColor::Red : FColor::Green,

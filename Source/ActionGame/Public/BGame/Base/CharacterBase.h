@@ -27,10 +27,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnKnockback(const FVector& TargetLocation, float Power);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bIsDrawDebugLine = true;
 	UFUNCTION(BlueprintCallable)
-	void LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult, ECollisionChannel TraceChannel);
+	void LineTrace(FVector StartLocation, FVector EndLocation, FHitResult& OutHitResult,
+		ECollisionChannel TraceChannel);
+
+	UFUNCTION(BlueprintCallable)
+	void SphereTrace(float Radius, FVector StartLocation, FVector EndLocation, TArray<FHitResult>& OutHitResults,
+		ETraceTypeQuery TraceChannel, bool bDrawDebug);
 	/////////////////////////////// Delegate / Event Handle
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition=false, HideEditCondition))
