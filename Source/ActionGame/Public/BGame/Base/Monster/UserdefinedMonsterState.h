@@ -19,7 +19,10 @@ public:
 
 	void MoveFinished(bool bIsSuccessful);
 
-	void LookAtPlayerCharacter();
+	void LookAtPlayerCharacter() const;
+
+	UFUNCTION()
+	void ApplyDamageToPlayer(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 public:
 	UFUNCTION(BlueprintCallable)
 	void OnMoveRandomPointInRadius(FVector OriginLocation, float Radius, FVector& DestLocation);
@@ -30,6 +33,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnMoveFinished(bool bIsSuccess);
 
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
+	void OnApplyDamageToPlayer(FName NotifyName);
+	
 	virtual void Update(float DeltaTime) override;
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "ControlledObject")

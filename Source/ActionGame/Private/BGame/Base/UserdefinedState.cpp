@@ -97,6 +97,13 @@ void UUserdefinedState::ClearTimer(FTimerHandle TimerHandle)
 	if (GetWorld()) GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 }
 
+void UUserdefinedState::ChangeState(UDataTable* EnumTable, FName State)
+{
+	if (!IsValidValues()) return;
+
+	MyCharacter->ChangeState(State);
+}
+
 bool UUserdefinedState::IsValidValues() const
 {
 	if (MyCharacter && MyController && MyMesh && bIsEnabled) return true;

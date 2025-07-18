@@ -75,7 +75,7 @@ public: //		Get Function
 	/////////////////////////////////// static Func
 public:
 	UFUNCTION(BlueprintCallable, meta=(DefaultToSelf = "Target", DataTablePin="EnumTable", RowNamePin="State"), Category="State")
-	static void ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State);
+	void ChangeState(ACharacterBase* Target, UDataTable* EnumTable, FName State);
 
 	UFUNCTION(BlueprintCallable, meta=(DataTablePin="DataTable", RowNamePin="RowData"), Category="State")
 	static bool IsCompareTableData(UDataTable* DataTable, FName RowData, FName CompareName);

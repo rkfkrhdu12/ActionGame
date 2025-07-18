@@ -64,6 +64,14 @@ void UUserdefinedMonsterState::Initialize(ACharacterBase* Character)
 	}
 
 	Super::Initialize(Character);
+
+	if (MyMesh)
+	{
+		if (auto animInst = MyMesh->GetAnimInstance())
+		{
+			animInst->OnPlayMontageNotifyBegin.AddDynamic(this, &UUserdefinedMonsterState::ApplyDamageToPlayer);
+		}
+	}
 }
 
 bool UUserdefinedMonsterState::IsValidValues() const
@@ -87,7 +95,7 @@ void UUserdefinedMonsterState::MoveFinished(bool bIsSuccessful)
 	if (IsValidValues()) OnMoveFinished(bIsSuccessful);
 }
 
-void UUserdefinedMonsterState::LookAtPlayerCharacter()
+void UUserdefinedMonsterState::LookAtPlayerCharacter() const
 {
 	if (!IsValidValues()) return;
 
@@ -97,6 +105,11 @@ void UUserdefinedMonsterState::LookAtPlayerCharacter()
 	{
 		MyCharacter->SetActorRotation(LerpRotation);
 	}
+}
+
+void UUserdefinedMonsterState::ApplyDamageToPlayer(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
+{
+	if (IsValidValues()) OnApplyDamageToPlayer(NotifyName); 
 }
 
 

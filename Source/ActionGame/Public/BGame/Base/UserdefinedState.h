@@ -62,6 +62,11 @@ public:
 	
 	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent)
 	void OnDelayFinished();
+
+	
+	UFUNCTION(BlueprintCallable, meta=(DataTablePin="EnumTable", RowNamePin="State"), Category="State")
+	void ChangeState(UDataTable* EnumTable, FName State);
+	
 protected:
 	UPROPERTY()
 	bool bIsInitialized = false;

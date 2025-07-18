@@ -39,6 +39,7 @@ void UKnockbackComponent::OnStart(const FVector& ReceiveLocation, float Power)
 	
 	MyCharacterMovement->StopMovementImmediately();
 
+	MyCharacterMovement->Velocity = FVector::ZeroVector;
 	MyCharacterMovement->GroundFriction = 0.0f;
 	MyCharacterMovement->BrakingDecelerationWalking = 1400.0f;
 	MyCharacterMovement->MaxWalkSpeed = 0.0f;
@@ -47,14 +48,9 @@ void UKnockbackComponent::OnStart(const FVector& ReceiveLocation, float Power)
 	ActorLocation.Z = 0;
 	TargetLocation.Z = 0;
 	
-	auto lookAtRotate = UKismetMathLibrary::FindLookAtRotation(ActorLocation, TargetLocation);
-	MyCharacter->SetActorRotation(lookAtRotate);
-	
-	FVector knockbackDirection = lookAtRotate.Vector() * -1.0f;
+	auto lookAtRotate = UKismetMathLibrary::FindLookAtRotation(TargetLocation, ActorLocation);
+	FVector knockbackDirection = lookAtRotate.Vector();
 	knockbackDirection.Normalize();
-
-	DrawDebugLine(GetWorld(), MyCharacter->GetActorLocation(), ReceiveLocation, true ? FColor::Red : FColor::Green,
-		false, 1.f);
 	
 	MyCharacterMovement->AddImpulse(knockbackDirection * Power, true);
 
